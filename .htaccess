@@ -1,0 +1,20 @@
+<IfModule mod_fcgid.c>
+   AddHandler fcgid-script .fcgi
+   <Files ~ (\.fcgi)>
+       SetHandler fcgid-script
+# For security reasons, Option followsymlinks cannot be overridden.
+#       Options +FollowSymLinks +ExecCGI
+       Options +SymLinksIfOwnerMatch +ExecCGI
+   </Files>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+# For security reasons, Option followsymlinks cannot be overridden.
+#   Options +FollowSymlinks
+   Options +SymLinksIfOwnerMatch
+   RewriteEngine On
+#   RewriteBase /
+   RewriteBase /scripts/drawing/
+   RewriteCond %{REQUEST_FILENAME} !-f
+   RewriteRule ^(.*)$ index.fcgi/$1 [QSA,L]
+</IfModule>

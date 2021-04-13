@@ -1,0 +1,136 @@
+{
+
+"conditions":{
+		"0": ["vertical_easy", "vertical_train", "vertical_test"],
+		"1": ["horizontal_easy", "horizontal_train", "horizontal_test"]
+	},
+
+"stims": {
+	"vertical_easy": [
+		"S12_1.png",
+		"S12_5.png",
+		"S12_8.png",
+		"S12_10.png",
+		"S12_32.png",
+		"S12_34.png",
+		"S12_38.png"
+	],
+
+	"vertical_train": [
+		"S12_20.png",
+		"S12_39.png",
+		"S12_57.png",
+		"S12_79.png",
+		"S12_113.png",
+		"S12_124.png",
+		"S12_126.png",
+		"S12_133.png",
+		"S12_147.png",
+		"S12_155.png",
+		"S12_163.png",
+		"S12_200.png",
+		"S12_214.png"
+	],
+
+	"vertical_test": [
+		"S12_31.png",
+		"S12_52.png",
+		"S12_55.png",
+		"S12_70.png",
+		"S12_129.png",
+		"S12_139.png",
+		"S12_141.png",
+		"S12_148.png",
+		"S12_207.png",
+		"S12_222.png",
+		"S12_224.png",
+		"S12_229.png",
+		"S12_233.png",
+		"S12_235.png",
+		"S12_243.png",
+		"S12_246.png",
+		"S12_132.png",
+		"S12_201.png",
+		"S12_220.png",
+		"S12_247.png",
+		"S13_182.png",
+		"S13_217.png",
+		"S13_219.png",
+		"S12_13_test_1.png",
+		"S12_13_test_2.png",
+		"S12_13_test_4.png",
+		"S12_13_test_5.png",
+		"S12_13_test_6.png",
+		"S12_13_test_7.png",
+		"S12_13_test_8.png",
+		"S12_13_test_9.png",
+		"S12_13_test_10.png",
+		"S12_13_test_11.png",
+		"S12_13_test_12.png"
+	],
+
+	"horizontal_easy": [
+		"S13_1.png",
+		"S13_2.png",
+		"S13_10.png",
+		"S13_27.png",
+		"S13_77.png",
+		"S13_78.png",
+		"S13_106.png"
+	],
+
+	"horizontal_train": [
+		"S13_32.png",
+		"S13_49.png",
+		"S13_97.png",
+		"S13_153.png",
+		"S13_160.png",
+		"S13_161.png",
+		"S13_166.png",
+		"S13_169.png",
+		"S13_170.png",
+		"S13_186.png",
+		"S13_189.png",
+		"S13_232.png",
+		"S13_238.png"
+	],
+
+	"horizontal_test": [
+		"S13_89.png",
+		"S13_91.png",
+		"S13_147.png",
+		"S13_150.png",
+		"S13_172.png",
+		"S13_180.png",
+		"S13_183.png",
+		"S13_187.png",
+		"S13_199.png",
+		"S13_205.png",
+		"S13_230.png",
+		"S13_239.png",
+		"S13_243.png",
+		"S13_252.png",
+		"S13_257.png",
+		"S13_265.png",
+		"S12_132.png",
+		"S12_201.png",
+		"S12_220.png",
+		"S12_247.png",
+		"S13_182.png",
+		"S13_217.png",
+		"S13_219.png",
+		"S12_13_test_1.png",
+		"S12_13_test_2.png",
+		"S12_13_test_4.png",
+		"S12_13_test_5.png",
+		"S12_13_test_6.png",
+		"S12_13_test_7.png",
+		"S12_13_test_8.png",
+		"S12_13_test_9.png",
+		"S12_13_test_10.png",
+		"S12_13_test_11.png",
+		"S12_13_test_12.png"
+	]
+
+	}
+}
