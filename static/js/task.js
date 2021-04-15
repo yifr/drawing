@@ -55,6 +55,15 @@ function displayStim(newStim, dataDisplay) {
 	return
 }
 
+function recordData() {
+	var record = {};
+	var strokes = [];
+	if (sketchpad) {
+		strokes = sketchpad.strokes()
+	}
+	if ($("
+}
+
 $(document).ready(function() { 
 	console.log('Loaded page');
 	$.get("experiment_config")
