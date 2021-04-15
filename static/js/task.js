@@ -45,15 +45,25 @@ function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function displayStim(newStim, dataDisplay) {
+	if (dataDisplay === "images") {
+		var path = "static/images/stim/" + newStim;
+		$("#stim").prop("src", path);
+	} else if (dataDisplay === "descriptions") {
+		$("#descriptions").text(newStim);	
+	}
+	return
+}
+
 $(document).ready(function() { 
 	console.log('Loaded page');
 	$.get("experiment_config")
 		.done(function(data) {
 			console.log(data);
 
-			const trials = data['trials'];
-			var trialIndex = 0;
-			var currentTrial = trials[trialIndex];
+			const phases = data["phases"];
+			var phaseIndex = 0;
+			var currentTrial = phases[phaseIndex];
 			var currentConfig = data[currentTrial];
 
 			// Toggle UI Components
@@ -63,10 +73,8 @@ $(document).ready(function() {
 			var stims = currentConfig[dataDisplay];
 			var stimIndex = 0;
 			console.log(stims)
-
-			var path = "static/images/stim/" + stims[stimIndex];
-			$("#stim").prop("src", path);
-
+			
+			displayStim(stims[stimIndex], dataDisplay);
 			$('#progress').html(capitalize(currentTrial) + ": " + (stimIndex + 1) + "/" + stims.length);
 
 			$('#next-image').on('click', function nextDrawing() {
@@ -80,17 +88,20 @@ $(document).ready(function() {
 						return;
 					}
 				}
+				
+				// Log data
+				var trialData = recordData();
 
 				// Get next image
 				stimIndex += 1;
 				if (stimIndex >= stims.length) {
-					trialIndex += 1;
-					if (trialIndex >= trials.length) {
+					phaseIndex += 1;
+					if (phaseIndex >= phases.length) {
 						alert("Experiment completed!");
 						return
 						// Redirect to something else
 					} else {
-						currentTrial = trials[trialIndex];
+						currentTrial = phases[phaseIndex];
 						currentConfig = data[currentTrial];
 						alert("Moving onto the " + currentTrial + " phase!");
 						UIComponents = currentConfig['ui_components'];
@@ -103,11 +114,10 @@ $(document).ready(function() {
 				$('#progress').html(capitalize(currentTrial) + ": " + (stimIndex + 1) + "/" + stims.length);
 				
 				stim = stims[stimIndex];
-				path = 'static/images/stim/' + stim;
-				$("#stim").prop('src', path);
+				displayStim(stim, dataDisplay);
 
-				// Log data
-				
+					
+
 				// Reset Sketchpad and description
 				$('#description').val('');	
 				if (sketchpad) {

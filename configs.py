@@ -11,9 +11,9 @@ INSTRUCTIONS:
 
 Configs should all share the following format:
      {
-      "trials": ['test', 'train', 'generate'],  # Specify what trials the user sees
+      "phases": ['test', 'train', 'generate'],  # Specify what phases the user needs to complete
 
-      "train": # for each trial, specify the ui and data
+      "train": # for each phase, specify the ui and data
         {
             "ui_components": [...] # list specifying ui components. Options:
                                     'draw': to collect drawings
@@ -27,7 +27,7 @@ Configs should all share the following format:
                                     this list should have descriptions
                                     for the corresponding images.  
         }
-        ... # repeat this for each trial type
+        ... # repeat this for each phase type
 
         "meta": # General metadata about experiment
             {
@@ -60,7 +60,7 @@ def generate_config(experiment_id):
             of images
         """
         
-        config['trials'] = ['train', 'test']
+        config['phases'] = ['train', 'test']
         train_config = {}
         train_config['ui_components'] = ['images', 'draw']
         train_config['images'] = stims[group_type + '_train']
@@ -75,11 +75,11 @@ def generate_config(experiment_id):
         """ 
         Describe experiment
         """
-        config['trials'] = ['train', 'test', 'generate']
-        trial_config = {}
-        trial_config['ui_components'] = []
-        trial_config['images'] = []
-        trial_config['descriptions'] = [] # if applicable
+        config['phases'] = ['train', 'test', 'generate']
+        phase_config = {}
+        phase_config['ui_components'] = []
+        phase_config['images'] = []
+        phase_config['descriptions'] = [] # if applicable
    
     else:
        return None
