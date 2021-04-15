@@ -20,20 +20,24 @@
 		</div>
 	</div>
 		<div class="row">
-			<div class="col" id="stim-container" align="center">
+			<div class="col" id="stim-container" align="center" style="display: none">
 				<h1> Original: </h1>
 				<img id="stim" src="static/images/blank.png" alt="stim" />
 			</div>
-			<div class="col" id="editor-container" align="center">
+			<div class="col" id="descriptions-container" align="center" style="display: none">			
+				<h1> Instructions: </h1>
+				<h4 id="descriptions"></h4>
+			</div>
+			<div class="col" id="editor-container" align="center" style="display: none">
 				<h1> Draw: </h1>
 				<div id="editor"></div>
 			</div>
 		</div>
 
 		<div class="row">
-			<div class="col" id="description-container" align="center">
+			<div class="col" id="describe-container" align="center" style="visibility: hidden">
 				<h1> Describe: </h1>
-				<textarea rows="3" cols="100" id="description" style="border: solid" placeholder="Describe what you see in the drawing..." ></textarea>
+				<textarea rows="3" cols="100" id="describe" style="border: solid" placeholder="Describe what you see in the drawing..." ></textarea>
 			</div>
 		</div>
 		<div class="row">

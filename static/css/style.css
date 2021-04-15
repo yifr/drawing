@@ -4,6 +4,15 @@
 	border: 1px solid gray;
 }
 
+#instruction {
+	min-width: 405px; 
+	min-height: 405px;
+	border: 1px solid gray;
+	text-align: left;
+	padding: 10px;
+	margin: 10px;
+}
+
 #viewer {
 	width: 1000px;
 	margin: 0 auto;
@@ -21,7 +30,7 @@ strong {
 
 #description {
     font-size: 20px;
-    border: solid 1px black !important;
+    border: solid 1px gray !important;
     margin: 10px;
 }
 

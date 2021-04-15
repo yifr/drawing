@@ -1,79 +1,124 @@
-var sketchpad = null; 
-var group_id = 1;
-var stims= null;
+var DEBUG = true;
+var sketchpad = null;
 
-function logStrokes() {
-	console.log("User strokes: ");
-	console.log(sketchpad.strokes());
+function RenderUI(UI_Components) {
+	// Turn everything off first
+	$("#descriptions-container").hide();
+	$("#editor-container").hide();
+	$("#stim-container").hide();
+	$("#describe-container").css("visibility", "hidden");
+
+	var data_display = null;
+
+	// turn on relevant components
+	for (i=0; i < UI_Components.length; i++) {
+		var component = UI_Components[i];
+		if (component === "draw") {
+			// Create sketchpad
+			if (sketchpad == null) { 
+				sketchpad = Raphael.sketchpad("editor", {
+					width: 400,
+					height: 400,
+					border: "solid",
+					editing: true
+				});
+			} 
+			var pen = sketchpad.pen();
+			pen.width(2);
+
+			$("#editor-container").show();
+		} else if (component === "describe") {
+			$("#describe-container").css("visibility", "visible");
+		} else if (component === "images") {
+			$("#stim-container").show();
+			data_display = "images";	// Update data display 
+		} else if (component === "descriptions") {
+			$("#descriptions-container").show();
+			data_display = "descriptions";	// Update data display
+		}
+	}
+
+	return data_display;
 }
 
-if ($("#editor")) {
-	sketchpad = Raphael.sketchpad("editor", {
-		width: 400,
-		height: 400,
-		border: "solid",
-		editing: true
-	});
-
-	var pen = sketchpad.pen();
-	pen.width(2);
+function capitalize(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-var easy = null;
-var train = null;
-var test = null;
+$(document).ready(function() { 
+	console.log('Loaded page');
+	$.get("experiment_config")
+		.done(function(data) {
+			console.log(data);
 
-$.get('get_stims', {'group_id': group_id})
-	.done(function(data) {
-		console.log(data)
-		var all_stims = data;
-		easy = all_stims[0];
-		train = all_stims[1];
-		test = all_stims[2];
-		
-		var max_train = easy.length + train.length;
-		var max_test = test.length;
-		stims = easy.concat(train).concat(test);
-		console.log(stims)
-		var stim = stims.shift();
-		var path = 'static/images/stim/' + stim;
-		$("#stim").prop("src", path);
+			const trials = data['trials'];
+			var trialIndex = 0;
+			var currentTrial = trials[trialIndex];
+			var currentConfig = data[currentTrial];
 
-		$("#erase-button").on('click', function() { 
-			sketchpad.clear();
-		});
-		
-		var idx = 1;
-		var max_trials = max_train;
-		var phase = "Train";
-		$('#progress').html(phase + ": " + idx + "/" + max_trials);
+			// Toggle UI Components
+			var UIComponents = currentConfig['ui_components'];
+			var dataDisplay = RenderUI(UIComponents);
 
-		$('#next-image').on('click', function next_drawing() {
-			// Get next image
-			idx += 1;
-			if (idx > max_trials) {
-				phase = "Test";
-				idx = 1;
-				max_trials = max_test;
-			}
-			stim = stims.shift();
-			console.log(stim)
-			$('#progress').html(phase + ": " + idx + "/" + max_trials);
-			path = 'static/images/stim/' + stim;
-			$("#stim").prop('src', path);
+			var stims = currentConfig[dataDisplay];
+			var stimIndex = 0;
+			console.log(stims)
 
-			// Log strokes 
-			logStrokes()
-			$('#description').val('');	
-			//Log Description
+			var path = "static/images/stim/" + stims[stimIndex];
+			$("#stim").prop("src", path);
+
+			$('#progress').html(capitalize(currentTrial) + ": " + (stimIndex + 1) + "/" + stims.length);
+
+			$('#next-image').on('click', function nextDrawing() {
+				if (!DEBUG) {
+					if (sketchpad && sketchpad.strokes().length < 2) {
+						alert("Please make sure you have accurately placed all your strokes on the sketchpad.");
+						return;
+					}
+					if ($("#describe-container").css("visibility") === "visible" && !$("#describe").text()) {
+						alert("Please make sure you have entered an accurate description before moving on.");
+						return;
+					}
+				}
+
+				// Get next image
+				stimIndex += 1;
+				if (stimIndex >= stims.length) {
+					trialIndex += 1;
+					if (trialIndex >= trials.length) {
+						alert("Experiment completed!");
+						return
+						// Redirect to something else
+					} else {
+						currentTrial = trials[trialIndex];
+						currentConfig = data[currentTrial];
+						alert("Moving onto the " + currentTrial + " phase!");
+						UIComponents = currentConfig['ui_components'];
+						dataDisplay = RenderUI(UIComponents);
+						stims = currentConfig[dataDisplay];
+						stimIndex = 0;
+					}
+				}
+
+				$('#progress').html(capitalize(currentTrial) + ": " + (stimIndex + 1) + "/" + stims.length);
 				
-			// Reset Sketchpad and description
-			if (sketchpad) {
-				sketchpad.clear()
-			}
+				stim = stims[stimIndex];
+				path = 'static/images/stim/' + stim;
+				$("#stim").prop('src', path);
 
-		});
+				// Log data
+				
+				// Reset Sketchpad and description
+				$('#description').val('');	
+				if (sketchpad) {
+					sketchpad.clear()
+				}
 
+			});
+
+		})
+	.fail(function() {
+		console.log('Failure!');
 	});
 
-
+});
