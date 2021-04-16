@@ -52,16 +52,33 @@ function displayStim(newStim, dataDisplay) {
 	} else if (dataDisplay === "descriptions") {
 		$("#descriptions").text(newStim);	
 	}
-	return
 }
 
-function recordData() {
-	var record = {};
-	var strokes = [];
-	if (sketchpad) {
-		strokes = sketchpad.strokes()
+function recordTrial(data, phase) {
+	// Make sure data has keys 
+	if (!("strokes" in data[phase])) {
+		data[phase]["strokes"] = [];	
+		data[phase]["user_descriptions"] = [];
 	}
-	if ($("
+	
+	// Get strokes and user descriptions
+	var strokes = sketchpad ? sketchpad.strokes : []
+	data[phase]["strokes"].push(strokes);
+	var userDescription = $("#describe").val();
+	data[phase]["user_descriptions"].push(userDescription);	
+	
+	$.ajax({
+		type: "POST",
+		url: "record_data", 
+		contentType: "application/json; charset=utf-8",
+		data: JSON.stringify(data)
+	})
+	.done(function(response) {
+		message = response['message']
+		console.log(response);
+	})
+
+	return data;
 }
 
 $(document).ready(function() { 
@@ -72,8 +89,8 @@ $(document).ready(function() {
 
 			const phases = data["phases"];
 			var phaseIndex = 0;
-			var currentTrial = phases[phaseIndex];
-			var currentConfig = data[currentTrial];
+			var currentPhase = phases[phaseIndex];
+			var currentConfig = data[currentPhase];
 
 			// Toggle UI Components
 			var UIComponents = currentConfig['ui_components'];
@@ -84,9 +101,12 @@ $(document).ready(function() {
 			console.log(stims)
 			
 			displayStim(stims[stimIndex], dataDisplay);
-			$('#progress').html(capitalize(currentTrial) + ": " + (stimIndex + 1) + "/" + stims.length);
+			$('#progress').html(capitalize(currentPhase) + ": " + (stimIndex + 1) + "/" + stims.length);
 
 			$('#next-image').on('click', function nextDrawing() {
+
+				// Janky check to make sure the user has submitted appropriate data
+				// Ideally the next button should be disabled until everything is filled correctly
 				if (!DEBUG) {
 					if (sketchpad && sketchpad.strokes().length < 2) {
 						alert("Please make sure you have accurately placed all your strokes on the sketchpad.");
@@ -99,7 +119,7 @@ $(document).ready(function() {
 				}
 				
 				// Log data
-				var trialData = recordData();
+				data = recordTrial(data, currentPhase);
 
 				// Get next image
 				stimIndex += 1;
@@ -107,12 +127,14 @@ $(document).ready(function() {
 					phaseIndex += 1;
 					if (phaseIndex >= phases.length) {
 						alert("Experiment completed!");
+						data['meta']['completed'] = True
+						
 						return
 						// Redirect to something else
 					} else {
-						currentTrial = phases[phaseIndex];
-						currentConfig = data[currentTrial];
-						alert("Moving onto the " + currentTrial + " phase!");
+						currentPhase = phases[phaseIndex];
+						currentConfig = data[currentPhase];
+						alert("Moving onto the " + currentPhase + " phase!");
 						UIComponents = currentConfig['ui_components'];
 						dataDisplay = RenderUI(UIComponents);
 						stims = currentConfig[dataDisplay];
@@ -120,19 +142,18 @@ $(document).ready(function() {
 					}
 				}
 
-				$('#progress').html(capitalize(currentTrial) + ": " + (stimIndex + 1) + "/" + stims.length);
+				// Update progress bar
+				$('#progress').html(capitalize(currentPhase) + ": " + (stimIndex + 1) + "/" + stims.length);
 				
-				stim = stims[stimIndex];
-				displayStim(stim, dataDisplay);
-
-					
-
 				// Reset Sketchpad and description
 				$('#description').val('');	
 				if (sketchpad) {
 					sketchpad.clear()
 				}
-
+				
+				// Update stimulus
+				stim = stims[stimIndex];
+				displayStim(stim, dataDisplay);
 			});
 
 		})
