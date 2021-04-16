@@ -22,8 +22,6 @@ def log_data():
         return json.dumps({'success':False, 'message': 'No prolific_pid found! Data not logged.'}), 200, {'ContentType':'application/json'} 
     else:
         status = db_utils.record(data)
-        with open('test.txt', 'w') as f:
-            f.write(status)
         return json.dumps(status), 200, {'ContentType':'application/json'} 
 
      

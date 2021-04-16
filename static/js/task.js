@@ -62,7 +62,7 @@ function recordTrial(data, phase) {
 	}
 	
 	// Get strokes and user descriptions
-	var strokes = sketchpad ? sketchpad.strokes : []
+	var strokes = sketchpad ? sketchpad.strokes() : []
 	data[phase]["strokes"].push(strokes);
 	var userDescription = $("#describe").val();
 	data[phase]["user_descriptions"].push(userDescription);	
