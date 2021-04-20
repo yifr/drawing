@@ -1,5 +1,14 @@
-var DEBUG = true;
+var DEBUG = false;
 var sketchpad = null;
+
+function closeModal() {
+	$(".modal").modal("hide");
+}
+
+function toggleModal(text) {
+	$("#infoModal-text").html(text);
+	$("#infoModal").modal("show");
+}
 
 function RenderUI(UI_Components) {
 	// Turn everything off first
@@ -54,6 +63,19 @@ function displayStim(newStim, dataDisplay) {
 	}
 }
 
+function logData(data) {
+	$.ajax({
+		type: "POST",
+		url: "record_data", 
+		contentType: "application/json; charset=utf-8",
+		data: JSON.stringify(data)
+	})
+	.done(function(response) {
+		message = response['message']
+		console.log(response);
+	})
+}
+
 function recordTrial(data, phase) {
 	// Make sure data has keys 
 	if (!("strokes" in data[phase])) {
@@ -66,17 +88,7 @@ function recordTrial(data, phase) {
 	data[phase]["strokes"].push(strokes);
 	var userDescription = $("#describe").val();
 	data[phase]["user_descriptions"].push(userDescription);	
-	
-	$.ajax({
-		type: "POST",
-		url: "record_data", 
-		contentType: "application/json; charset=utf-8",
-		data: JSON.stringify(data)
-	})
-	.done(function(response) {
-		message = response['message']
-		console.log(response);
-	})
+	logData(data);
 
 	return data;
 }
@@ -90,30 +102,33 @@ $(document).ready(function() {
 			const phases = data["phases"];
 			var phaseIndex = 0;
 			var currentPhase = phases[phaseIndex];
-			var currentConfig = data[currentPhase];
+			var phaseConfig = data[currentPhase];
 
 			// Toggle UI Components
-			var UIComponents = currentConfig['ui_components'];
+			var UIComponents = phaseConfig['ui_components'];
 			var dataDisplay = RenderUI(UIComponents);
 
-			var stims = currentConfig[dataDisplay];
+			var stims = phaseConfig[dataDisplay];
 			var stimIndex = 0;
-			console.log(stims)
+
+			if (DEBUG) { 
+				console.log(stims)
+			}
 			
 			displayStim(stims[stimIndex], dataDisplay);
 			$('#progress').html(capitalize(currentPhase) + ": " + (stimIndex + 1) + "/" + stims.length);
 
 			$('#next-image').on('click', function nextDrawing() {
 
-				// Janky check to make sure the user has submitted appropriate data
+				// Rough heuristic to make sure the user has submitted appropriate data
 				// Ideally the next button should be disabled until everything is filled correctly
 				if (!DEBUG) {
 					if (sketchpad && sketchpad.strokes().length < 2) {
-						alert("Please make sure you have accurately placed all your strokes on the sketchpad.");
+						toggleModal("Please make sure you have accurately placed all your strokes on the sketchpad.");
 						return;
 					}
 					if ($("#describe-container").css("visibility") === "visible" && !$("#describe").text()) {
-						alert("Please make sure you have entered an accurate description before moving on.");
+						toggleModal("Please make sure you have entered an accurate description before moving on.");
 						return;
 					}
 				}
@@ -123,21 +138,23 @@ $(document).ready(function() {
 
 				// Get next image
 				stimIndex += 1;
+
+				// Check if we've hit the end of a phase
 				if (stimIndex >= stims.length) {
 					phaseIndex += 1;
 					if (phaseIndex >= phases.length) {
-						alert("Experiment completed!");
 						data['meta']['completed'] = True
-						
-						return
-						// Redirect to something else
+						logData(data); 	// log that the user completed this experiment
+						toggleModal("Experiment completed!");
+						return;	// Redirect to feedback form?
+
 					} else {
 						currentPhase = phases[phaseIndex];
-						currentConfig = data[currentPhase];
-						alert("Moving onto the " + currentPhase + " phase!");
-						UIComponents = currentConfig['ui_components'];
+						phaseConfig = data[currentPhase];
+						toggleModal("Moving onto the " + currentPhase + " phase!");
+						UIComponents = phaseConfig['ui_components'];
 						dataDisplay = RenderUI(UIComponents);
-						stims = currentConfig[dataDisplay];
+						stims = phaseConfig[dataDisplay];
 						stimIndex = 0;
 					}
 				}

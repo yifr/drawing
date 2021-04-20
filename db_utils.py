@@ -6,7 +6,7 @@ DATABASE = 'laps'
 UNAME = certs.mongo_uname
 PASSWORD = certs.mongo_pwd  
 
-def open_connection(test_db=False):
+def open_connection():
     conn_str = "mongodb+srv://%s:%s@cluster0.aqpv0.mongodb.net/%s?retryWrites=true&w=majority" % (UNAME, PASSWORD, DATABASE)
     client = pymongo.MongoClient(conn_str)
     db = client[DATABASE]
@@ -20,6 +20,7 @@ def record_exists(collection, data):
 
     if result['meta'].get('completed'):
         return True
+
 
 def record(data):
     experiment_id = data['meta']['experiment_id']
