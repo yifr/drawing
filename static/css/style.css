@@ -4,10 +4,8 @@
 	border: 1px solid gray;
 }
 
-#instruction {
-	min-width: 405px; 
-	min-height: 405px;
-	border: 1px solid gray;
+#descriptions {
+	border: solid 5px blue;
 	text-align: left;
 	padding: 10px;
 	margin: 10px;
@@ -16,6 +14,11 @@
 #viewer {
 	width: 1000px;
 	margin: 0 auto;
+}
+
+.progress {
+	height: 40px;
+	margin-top: 10px;
 }
 
 /* text styling */
@@ -28,7 +31,8 @@ strong {
     border: solid 5px blue;
 }
 
-#description {
+
+#describe {
     font-size: 20px;
     border: solid 1px gray !important;
     margin: 10px;

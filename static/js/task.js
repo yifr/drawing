@@ -1,4 +1,4 @@
-var DEBUG = false;
+var DEBUG = true;
 var sketchpad = null;
 
 function closeModal() {
@@ -10,18 +10,43 @@ function toggleModal(text) {
 	$("#infoModal").modal("show");
 }
 
-function RenderUI(UI_Components) {
+function updateProgressBar(currentPhase, stimIdx, stimsLength) {
+	var percentComplete = Math.round(stimIdx / stimsLength * 100);
+	$("#progress-bar").attr("aria-valuenow", percentComplete);
+	$("#progress-bar").attr("style", "width: " + percentComplete + "%");
+	var phase = currentPhase.split("_")[1];
+	$("#currentPhase").html(phase);
+	$("#progress-bar").text(percentComplete + "%");
+}
+
+function RenderUI(phaseConfig) {
+	var UIComponents = phaseConfig['ui_components'];
+
 	// Turn everything off first
 	$("#descriptions-container").hide();
 	$("#editor-container").hide();
 	$("#stim-container").hide();
 	$("#describe-container").css("visibility", "hidden");
 
-	var data_display = null;
+	var dataDisplay = null;
+	
+	if (phaseConfig['sampling']) {
+		$("#stim-col").hide();
+		if (UIComponents.indexOf("draw") > -1) {
+			$("#editor-heading").text("1. Draw a new image like the ones you've seen")
+			if (UIComponents.indexOf("describe") > -1) {
+				$("#describe-heading").text("2. Describe your drawing");		
+			}
+		} else if (UIComponents.indexOf("describe") > -1) {
+			$("#describe-heading").text("1. Describe a new image like the ones you've seen")
+		} 
+	} else {
+		$("#stim-col").show(); // Should be displayed by default, but in case sampling isn't last
+	}
 
 	// turn on relevant components
-	for (i=0; i < UI_Components.length; i++) {
-		var component = UI_Components[i];
+	for (i=0; i < UIComponents.length; i++) {
+		var component = UIComponents[i];
 		if (component === "draw") {
 			// Create sketchpad
 			if (sketchpad == null) { 
@@ -40,26 +65,35 @@ function RenderUI(UI_Components) {
 			$("#describe-container").css("visibility", "visible");
 		} else if (component === "images") {
 			$("#stim-container").show();
-			data_display = "images";	// Update data display 
+			dataDisplay = "images";	// Update data display 
 		} else if (component === "descriptions") {
 			$("#descriptions-container").show();
-			data_display = "descriptions";	// Update data display
+			dataDisplay = "descriptions";	// Update data display
 		}
 	}
-
-	return data_display;
+	
+	if (dataDisplay == null) {
+		dataDisplay = 'images';
+	}
+	return dataDisplay;
 }
 
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function displayStim(newStim, dataDisplay) {
-	if (dataDisplay === "images") {
-		var path = "static/images/stim/" + newStim;
-		$("#stim").prop("src", path);
-	} else if (dataDisplay === "descriptions") {
-		$("#descriptions").text(newStim);	
+function displayStim(phaseConfig, stimIndex) {
+	if (phaseConfig['sampling']) { 
+		return;
+	}
+	
+	// Update images
+	var path = "static/images/stim/" + phaseConfig['images'][stimIndex];
+	$("#stim").prop("src", path);
+	
+	// Update descriptions if they exist
+	if(phaseConfig['descriptions'] && phaseConfig['descriptions'].length > stimIndex) {
+		$("#descriptions").html('"' + phaseConfig['descriptions'][stimIndex] + '"');	
 	}
 }
 
@@ -97,7 +131,9 @@ $(document).ready(function() {
 	console.log('Loaded page');
 	$.get("experiment_config")
 		.done(function(data) {
-			console.log(data);
+			if (DEBUG) {
+				console.log(data);
+			}
 
 			const phases = data["phases"];
 			var phaseIndex = 0;
@@ -105,18 +141,16 @@ $(document).ready(function() {
 			var phaseConfig = data[currentPhase];
 
 			// Toggle UI Components
-			var UIComponents = phaseConfig['ui_components'];
-			var dataDisplay = RenderUI(UIComponents);
-
+			var dataDisplay = RenderUI(phaseConfig);
+			
 			var stims = phaseConfig[dataDisplay];
+			if (DEBUG) {
+				console.log(stims);
+			}
 			var stimIndex = 0;
 
-			if (DEBUG) { 
-				console.log(stims)
-			}
-			
-			displayStim(stims[stimIndex], dataDisplay);
-			$('#progress').html(capitalize(currentPhase) + ": " + (stimIndex + 1) + "/" + stims.length);
+			displayStim(phaseConfig, stimIndex);
+			updateProgressBar(currentPhase, stimIndex, stims.length);
 
 			$('#next-image').on('click', function nextDrawing() {
 
@@ -127,7 +161,7 @@ $(document).ready(function() {
 						toggleModal("Please make sure you have accurately placed all your strokes on the sketchpad.");
 						return;
 					}
-					if ($("#describe-container").css("visibility") === "visible" && !$("#describe").text()) {
+					if ($("#describe-container").css("visibility") === "visible" && !$("#describe").val()) {
 						toggleModal("Please make sure you have entered an accurate description before moving on.");
 						return;
 					}
@@ -138,12 +172,15 @@ $(document).ready(function() {
 
 				// Get next image
 				stimIndex += 1;
+				
+				// Update progress bar
+				updateProgressBar(currentPhase, stimIndex, stims.length);
 
 				// Check if we've hit the end of a phase
 				if (stimIndex >= stims.length) {
 					phaseIndex += 1;
 					if (phaseIndex >= phases.length) {
-						data['meta']['completed'] = True
+						data['meta']['completed'] = true
 						logData(data); 	// log that the user completed this experiment
 						toggleModal("Experiment completed!");
 						return;	// Redirect to feedback form?
@@ -151,26 +188,22 @@ $(document).ready(function() {
 					} else {
 						currentPhase = phases[phaseIndex];
 						phaseConfig = data[currentPhase];
-						toggleModal("Moving onto the " + currentPhase + " phase!");
-						UIComponents = phaseConfig['ui_components'];
-						dataDisplay = RenderUI(UIComponents);
+						var phase = currentPhase.split("_")[1];
+						toggleModal("Moving onto Phase " + phase + "!");
+						dataDisplay = RenderUI(phaseConfig);
 						stims = phaseConfig[dataDisplay];
 						stimIndex = 0;
 					}
 				}
-
-				// Update progress bar
-				$('#progress').html(capitalize(currentPhase) + ": " + (stimIndex + 1) + "/" + stims.length);
-				
+	
 				// Reset Sketchpad and description
-				$('#description').val('');	
+				$('#describe').val('');	
 				if (sketchpad) {
 					sketchpad.clear()
 				}
 				
 				// Update stimulus
-				stim = stims[stimIndex];
-				displayStim(stim, dataDisplay);
+				displayStim(phaseConfig, stimIndex);
 			});
 
 		})

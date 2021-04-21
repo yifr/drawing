@@ -60,31 +60,123 @@ def generate_config(experiment_id):
             of images
         """
         
-        config['phases'] = ['train', 'test']
-        train_config = {}
-        train_config['ui_components'] = ['images', 'draw']
-        train_config['images'] = stims[group_type + '_train']
-        config['train'] = train_config
+        config['phases'] = ['phase_1', 'phase_2']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['images', 'draw', 'describe']
+        phase_1_config['images'] = stims[group_type + '_train']
+        config['phase_1'] = phase_1_config
 
-        test_config = {}
-        test_config['ui_components'] = ['images', 'draw']
-        test_config['images'] = stims['shared_test']
-        config['test'] = test_config
+        phase_2_config = {}
+        phase_2_config['ui_components'] = ['images', 'draw', 'describe']
+        phase_2_config['images'] = stims['shared_test']
+        config['phase_2'] = phase_2_config
+        
+        return config
 
-    elif experiment_id == 'SOMETHING_ELSE':
-        """ 
-        Describe experiment
-        """
-        config['phases'] = ['train', 'test', 'generate']
-        phase_config = {}
-        phase_config['ui_components'] = []
-        phase_config['images'] = []
-        phase_config['descriptions'] = [] # if applicable
-   
-    else:
-       return None
+    elif experiment_id == 'sampleImg':
+        config['phases'] = ['phase_1']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['draw']
+        phase_1_config['images'] = [None for i in range(10)]
+        phase_1_config['sampling'] = True
+        config['phase_1'] = phase_1_config
+        
+        return config
+
+    elif experiment_id == 'sampleText':
+        config['phases'] = ['phase_1']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['describe']
+        phase_1_config['images'] = [None for i in range(10)]
+        phase_1_config['sampling'] = True
+        config['phase_1'] = phase_1_config
+        
+        return config
+    
+    elif experiment_id == 'sampleAll':
+        config['phases'] = ['phase_1']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['draw', 'describe']
+        phase_1_config['images'] = [None for i in range(10)]
+        phase_1_config['sampling'] = True
+        config['phase_1'] = phase_1_config
+        
+        return config
+    
+    elif experiment_id == 'drawOnly':
+        config['phases'] = ['phase_1', 'phase_2']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['images', 'draw']
+        phase_1_config['images'] = stims[group_type + '_train']
+        config['phase_1'] = phase_1_config
+
+        phase_2_config = {}
+        phase_2_config['ui_components'] = ['images', 'draw', 'describe']
+        phase_2_config['images'] = stims['shared_test']
+        config['phase_2'] = phase_2_config
+        
+        return config
+    
+    elif experiment_id == 'describeOnly':
+        config['phases'] = ['phase_1', 'phase_2']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['images', 'describe']
+        phase_1_config['images'] = stims[group_type + '_train']
+        config['phase_1'] = phase_1_config
+
+        phase_2_config = {}
+        phase_2_config['ui_components'] = ['images', 'draw', 'describe']
+        phase_2_config['images'] = stims['shared_test']
+        config['phase_2'] = phase_2_config
+        
+        return config
+
+    elif experiment_id  == 'readDescriptions':
+        word_file = "/usr/share/dict/words"
+        WORDS = open(word_file).read().splitlines()
+
+        config['phases'] = ['phase_1', 'phase_2']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['descriptions', 'draw', 'describe']
+        phase_1_config['images'] = stims[group_type + '_train']
+        n_images = len(phase_1_config['images'])
+        phase_1_config['descriptions'] = [' '.join(np.random.choice(WORDS, np.random.randint(5, 10))) for i in range(n_images)]
+        config['phase_1'] = phase_1_config
+
+        phase_2_config = {}
+        phase_2_config['ui_components'] = ['descriptions', 'draw', 'describe']
+        phase_2_config['images'] = stims['shared_test']
+        n_images = len(phase_2_config['images'])
+        phase_2_config['descriptions'] = [' '.join(np.random.choice(WORDS, np.random.randint(4,8))) for i in range(n_images)]
+        config['phase_2'] = phase_2_config
+        
+        return config
+
+    elif experiment_id == 'bothStims':
+        word_file = "/usr/share/dict/words"
+        WORDS = open(word_file).read().splitlines()
+
+        config['phases'] = ['phase_1', 'phase_2']
+        phase_1_config = {}
+        phase_1_config['ui_components'] = ['descriptions', 'images', 'draw', 'describe']
+        phase_1_config['images'] = stims[group_type + '_train']
+        n_images = len(phase_1_config['images'])
+        phase_1_config['descriptions'] = [' '.join(np.random.choice(WORDS, np.random.randint(5, 10))) for i in range(n_images)]
+        config['phase_1'] = phase_1_config
+
+        phase_2_config = {}
+        phase_2_config['ui_components'] = ['descriptions', 'images', 'draw', 'describe']
+        phase_2_config['images'] = stims['shared_test']
+        n_images = len(phase_2_config['images'])
+        phase_2_config['descriptions'] = [' '.join(np.random.choice(WORDS, np.random.randint(4,8))) for i in range(n_images)]
+        config['phase_2'] = phase_2_config
+        
+        return config
+
     
     return config
+
+    
 
 if __name__ == '__main__':
     config = generate_config(AVAILABLE_CONFIGS[0])
