@@ -6,7 +6,7 @@ Generates JSON files containing a complete experimental configuration for human 
 Assumes stimuli (images) are in {INPUT_STIMULI_DIR}/S_{N} directories.
 Assumes stimuli_set files (containing the full set of stimuli to draw on from the experiment) generated according to: https://github.com/lucast4/drawgood/blob/main_language/language/gen_stimuli_sets.py
 
-Generates JSON files in the following format
+Generates JSON files in the following format: (see configs.py)
 
 Writes out config files to a {CONFIG_DIR}/{EXPERIMENT}_{STIMULI_SET}/{condition}/batch_{N}_shuffle_{N}.json file.
 
@@ -37,6 +37,7 @@ TIMESTAMP = "timestamp"
 STIMULI_SET = "stimuli_set"
 TRAIN = "train"
 TEST = "test"
+SAMPLE = 'sample'
 SAMPLING = "sampling"
 ALL = "all"
 
@@ -44,6 +45,8 @@ EXPERIMENT_PHASES = "phases"
 EXPERIMENT_PHASE = "phase"
 UI_COMPONENTS = "ui_components"
 IMAGES = "images"
+
+SAMPLING_DEFAULT_BATCH_SIZE = 10
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--experiments",
@@ -65,6 +68,9 @@ parser.add_argument("--train_batch_size_per_phase",
 parser.add_argument("--test_batch_size",
                     default=ALL,
                     help="How many stimuli to show per test phase.")
+parser.add_argument("--sampling_batch_size",
+                    default=SAMPLING_DEFAULT_BATCH_SIZE,
+                    help="How many samples to select during sampling phases.")
 parser.add_argument("--shuffles_per_stimuli_set",
                     default=1,
                     help="How many complete shuffles to generate for a given stimuli set.")
@@ -97,18 +103,16 @@ def get_config_dir(experiment_id, args):
 def get_config_name(batch, shuffle):
     return f"batch_{batch}_shuffle_{shuffle}.json"
 
+def get_phase_name(phase_num):
+    return f"{EXPERIMENT_PHASE}_{phase_num}"
+
 @register("0_baselines_priors__a_train-none__draw-describe-sample-interleave")
 def generate_0_baselines_priors_a_train_none_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_0_baselines_priors(args, experiment_id, stimuli_set)
 
-def get_test_components_from_experiment_id(experiment_id):
-    test_type = experiment_id.split("__")[-1]
-    test_1, test_2, sample_type, should_interleave = test_type.split("-")
-    if should_interleave == "interleave":
-        return [test_1, test_2]
-    else:
-        print("Not yet implemented")
-        assert False
+@register("0_baselines_priors__a_train-none__describe-draw-sample-interleave")
+def generate_0_baselines_priors_a_train_none_describe_draw_sample_interleave(args, experiment_id, stimuli_set):
+    return generate_0_baselines_priors(args, experiment_id, stimuli_set)
     
 def generate_0_baselines_priors(args, experiment_id, stimuli_set):
     all_configs = [] # (config_path, config_data)
@@ -117,7 +121,8 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
     test_tasks = stimuli_set[TEST]
     all_test_stimuli = []
     for condition in test_tasks: 
-        all_test_stimuli += test_tasks[condition]
+        for stimuli_sub_group in test_tasks[condition]:
+            all_test_stimuli += stimuli_sub_group
     condition = ALL
     
     config_path = os.path.join(get_config_dir(experiment_id, args), condition)
@@ -148,7 +153,7 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
             phase = f"{EXPERIMENT_PHASE}_2"
             config_data[EXPERIMENT_PHASES].append(phase)
             phase_config = dict()
-            phase_config[IMAGES] = []
+            phase_config[IMAGES] = [None] * args.sampling_batch_size
             phase_config[SAMPLING] = True
             phase_config[UI_COMPONENTS] =  get_test_components_from_experiment_id(experiment_id)
             config_data[phase] = phase_config
@@ -156,6 +161,100 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
             all_configs.append((full_config_path, config_data))
     return all_configs
 
+@register("1_no_provided_language__a_train-images__draw-describe-sample-interleave")
+def generate_1_no_provided_language_a_train_images_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+    return generate_1_no_provided_language(args, experiment_id, stimuli_set)
+
+@register("1_no_provided_language__a_train-images-draw__draw-describe-sample-interleave")
+def generate_1_no_provided_language_a_train_images_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+    return generate_1_no_provided_language(args, experiment_id, stimuli_set)
+
+def get_n_batches_for_condition(args, condition, stimuli_set):
+    """Gets the maximum number of batches given the specified train and test batch sizes"""
+    n_stimuli_per_train_phase = [len(phase) for phase in stimuli_set[TRAIN][condition]] 
+    n_stimuli_per_test_phase = len(stimuli_set[TEST].get(condition, [])) + len(stimuli_set[TEST].get(ALL, []))
+    
+    max_stimuli_per_train_phase = max(n_stimuli_per_train_phase)
+    n_train_batches = int(max_stimuli_per_train_phase / args.train_batch_size_per_phase) + 1 if args.train_batch_size_per_phase is not ALL else 1
+    
+    n_test_batches = int(n_stimuli_per_test_phase / args.test_batch_size) + 1 if args.test_batch_size is not ALL else 1
+    return max(n_train_batches, n_test_batches)
+    
+    
+def generate_1_no_provided_language(args, experiment_id, stimuli_set):
+    all_configs = defaultdict(lambda: defaultdict()) # (config_path, config_data)
+    description = "No provided language during training. Conditions on different image stimuli during training. Uses the draw, describe, and free-generation testing behaviors."
+    
+    metadata = generate_base_metadata(experiment_id, description, args)
+    n_sample_phases = 1 if SAMPLE in experiment_id else 0 
+    conditions = list(stimuli_set[TRAIN].keys())
+    total_n_train_phases = len(stimuli_set[TRAIN][conditions[0]])
+    total_n_test_phases = len(stimuli_set[TEST].get(conditions[0], [])) + len(stimuli_set[TEST].get(ALL, [])) + n_sample_phases        
+            
+    for shuffle in range(args.shuffles_per_stimuli_set):
+        for condition in conditions:
+            config_path = os.path.join(get_config_dir(experiment_id, args), condition)
+            # Calculate the number of 'batches' in advance based on the length of the phases.
+            total_n_batches = get_n_batches_for_condition(args, condition, stimuli_set)
+            
+            # Initialize all of the batches and their metadata.
+            for batch in range(total_n_batches):
+                config_name = get_config_name(batch, shuffle)
+                full_config_path = os.path.join(config_path, config_name)
+                config_data = dict()
+                config_data[METADATA] = copy.copy(metadata)
+                config_data[METADATA][CONDITION] = condition
+                config_data[METADATA][FULL_CONFIG_PATH] = full_config_path
+                config_data[EXPERIMENT_PHASES] = [get_phase_name(phase_num) for phase_num in range(1, total_n_train_phases + total_n_test_phases + 1 )]
+                all_configs[full_config_path] = config_data
+            
+            # Build train phases
+            for train_phase_idx, train_phase_stimuli in enumerate(stimuli_set[TRAIN][condition]):
+                phase_name = get_phase_name(train_phase_idx + 1)
+                random.shuffle(train_phase_stimuli)
+                batch_size = args.train_batch_size_per_phase if args.train_batch_size_per_phase is not ALL else len(train_phase_stimuli)
+                for batch in range(total_n_batches):
+                    config_name = get_config_name(batch, shuffle)
+                    full_config_path = os.path.join(config_path, config_name)
+                    config_data = all_configs[full_config_path]
+                    
+                    batch_start = batch * batch_size
+                    batch_end = start + batch_size
+                    config_data[phase] = get_train_phase_config(experiment_id, train_phase_stimuli, batch_start, batch_end)
+            # Build test phase
+            for test_phase_idx, test
+
+def get_train_phase_config(experiment_id, train_phase_stimuli, batch_start, batch_end):
+    phase_config = dict()
+    image_batch = train_phase_stimuli[start:end]
+    phase_config[IMAGES] = image_batch
+    phase_config[SAMPLING] = False
+    phase_config[UI_COMPONENTS] =  get_train_components_from_experiment_id(experiment_id)
+    return phase_config
+
+def get_train_components_from_experiment_id(experiment_id):
+    train_type = experiment_id.split("__")[1]
+    train_components = train_type.split(TRAIN)
+    return train_components.split("-")
+    # TODO we will need to make this more fine grained based on the descriptions later on.
+
+def get_test_phase_config(experiment_id, test_phase_stimuli, batch_start, batch_end, sampling=False):
+    phase_config = dict()
+    image_batch = test_phase_stimuli[start:end] if not sampling else [None] * args.sampling_batch_size    
+    phase_config[SAMPLING] = sampling
+    phase_config[UI_COMPONENTS] = [IMAGES] if not sampling else []
+    phase_config[UI_COMPONENTS] += get_test_components_from_experiment_id(experiment_id)
+    return phase_config
+                
+def get_test_components_from_experiment_id(experiment_id):
+    test_type = experiment_id.split("__")[-1]
+    test_1, test_2, sample_type, should_interleave = test_type.split("-")
+    if should_interleave == "interleave":
+        return [test_1, test_2]
+    else:
+        print("Not yet implemented")
+        assert False
+        
 def set_random_seed(args):
     random.seed(args.seed)
     
