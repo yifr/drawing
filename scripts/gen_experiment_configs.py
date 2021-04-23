@@ -14,6 +14,7 @@ Usage: python gen_experiment_configs.py
         --experiment 0_baselines_priors_a_train-none-draw-describe-sample-interleave
         --output_dir static/configs
         --input_stimuli_set_dir static/stimuli_sets
+        --language_set train_images_test_common_s12_s13_neurips_2020 
         --stimuli_set train_images_test_common_s12_s13_neurips_2020  
         --shuffles_per_stimuli_set 1 
         --seed 0
@@ -27,7 +28,8 @@ from collections import defaultdict
 DEFAULT_OUTPUT_DIR = "static/configs"
 INPUT_STIMULI_SET_DIR = 'static/stimuli_sets'
 DEFAULT_STIMULI_SET = "train_images_test_common_s12_s13_neurips_2020"
-
+INPUT_LANGUAGE_SET_DIR = "static/language_sets"
+DEFAULT_LANGUAGE_SET = "toy_train_common_test_common_s12_s13_neurips_2020"
 
 METADATA = "metadata"
 CONDITIONS = "conditions"
@@ -35,7 +37,10 @@ CONDITION = "condition"
 FULL_CONFIG_PATH = "full_config_path"
 EXPERIMENT_ID = "experiment_id"
 DESCRIPTION = "description"
+DESCRIPTIONS = "descriptions"
+LANGUAGE = "language"
 TIMESTAMP = "timestamp"
+LANGUAGE_SET = "language_set"
 STIMULI_SET = "stimuli_set"
 TRAIN = "train"
 TEST = "test"
@@ -64,6 +69,12 @@ parser.add_argument("--input_stimuli_set_dir",
 parser.add_argument("--stimuli_set",
                     default=DEFAULT_STIMULI_SET,
                     help="Stimuli set containing the full dataset of stimuli to generate under.")
+parser.add_argument("--input_language_set_dir",
+                    default=INPUT_LANGUAGE_SET_DIR,
+                    help="Top-level directory where the langauge for stimuli sets are stored.")
+parser.add_argument("--language_set",
+                    default=None,
+                    help="Language set containing accompanying language.")
 parser.add_argument("--train_batch_size_per_phase",
                     default=ALL,
                     help="How many stimuli to show per train phase.")
@@ -96,7 +107,8 @@ def generate_base_metadata(experiment_id, description, args):
         EXPERIMENT_ID: experiment_id,
         DESCRIPTION : description,
         TIMESTAMP : timestamp,
-        STIMULI_SET: args.stimuli_set
+        STIMULI_SET: args.stimuli_set,
+        LANGUAGE_SET: args.language_set
     }
     
 def get_config_dir(experiment_id, args):
@@ -176,6 +188,17 @@ def generate_1_no_provided_language(args, experiment_id, stimuli_set):
     description = "No provided language during training. Conditions on different image stimuli during training. Uses the draw, describe, and free-generation testing behaviors."
     return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
 
+@register("2_provided_language__a_train-images-descriptions__draw-describe-sample-interleave")
+def generate_2_provided_language__a_train_images_descriptions__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+    return generate_2_provided_language(args, experiment_id, stimuli_set)
+
+@register("2_provided_language__b_train-images-descriptions-draw__draw-describe-sample-interleave")
+def generate_2_provided_language__b_train_images_draw_descriptions__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+    return generate_2_provided_language(args, experiment_id, stimuli_set)
+    
+def generate_2_provided_language(args, experiment_id, stimuli_set):
+    description = "Provided language during training. Conditions on different language stimuli during training; images are the same. Uses the draw, describe, and free-generation testing behaviors."
+    return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
 
 @register("3_producing_language__a_train-images-describe__draw-describe-sample-interleave")
 def generate_3_producing_language_a_train_images_describe__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
@@ -241,7 +264,7 @@ def generate_batched_train_test_configs(args, description, experiment_id, stimul
                     if batch_start > len(train_phase_stimuli):
                         # TODO (cathywong): this won't actually wrap around.
                         assert False
-                    config_data[phase_name] = get_train_phase_config(experiment_id, train_phase_stimuli, batch_start, batch_end)
+                    config_data[phase_name] = get_train_phase_config(args, experiment_id, condition, train_phase_stimuli, batch_start, batch_end)
             # Build test phases that aren't sampling based
             test_stimuli_phases = stimuli_set[TEST].get(conditions[0], []) + stimuli_set[TEST].get(ALL, [])
             for test_phase_idx, test_phase_stimuli in enumerate(test_stimuli_phases):
@@ -269,16 +292,24 @@ def generate_batched_train_test_configs(args, description, experiment_id, stimul
                     config_data[phase_name] = get_test_phase_config(experiment_id, None, None, None, sampling=True)
     return all_configs.items()
 
-def get_train_phase_config(experiment_id, train_phase_stimuli, batch_start, batch_end):
+def get_description_for_images(args, condition, image_batch):
+    full_language_set = os.path.join(args.input_language_set_dir, args.language_set + ".json")
+    with open(full_language_set, 'r') as f:
+        language_data = json.load(f)
+    return [language_data[LANGUAGE][condition][image][0] for image in image_batch]
+
+def get_train_phase_config(args, experiment_id, condition, train_phase_stimuli, batch_start, batch_end):
     phase_config = dict()
     image_batch = train_phase_stimuli[batch_start:batch_end]
     phase_config[IMAGES] = image_batch
     phase_config[SAMPLING] = False
     phase_config[UI_COMPONENTS] =  get_train_components_from_experiment_id(experiment_id)
+    if DESCRIPTIONS in phase_config[UI_COMPONENTS]:
+        phase_config[DESCRIPTIONS] = get_description_for_images(args, condition, image_batch)
     return phase_config
 
+
 def get_train_components_from_experiment_id(experiment_id):
-    # TODO we will need to make this more fine grained based on the descriptions later on.
     train_type = experiment_id.split("__")[1]
     train_components = train_type.split(TRAIN)[-1]
     ui_components = [comp for comp in train_components.split("-") if len(comp) > 0]
