@@ -48,6 +48,10 @@ SAMPLE = 'sample'
 SAMPLING = "sampling"
 ALL = "all"
 
+DRAW = "draw"
+DESCRIBE = "describe"
+SAMPLE = "sample"
+
 EXPERIMENT_PHASES = "phases"
 EXPERIMENT_PHASE = "phase"
 UI_COMPONENTS = "ui_components"
@@ -112,7 +116,7 @@ def generate_base_metadata(experiment_id, description, args):
     }
     
 def get_config_dir(experiment_id, args):
-    return f"{experiment_id}_{args.stimuli_set}"
+    return f"{experiment_id}__{args.stimuli_set}"
 
 def get_config_name(batch, shuffle):
     return f"batch_{batch}_shuffle_{shuffle}.json"
@@ -120,12 +124,12 @@ def get_config_name(batch, shuffle):
 def get_phase_name(phase_num):
     return f"{EXPERIMENT_PHASE}_{phase_num}"
 
-@register("0_baselines_priors__a_train-none__draw-describe-sample-interleave")
-def generate_0_baselines_priors_a_train_none_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+@register("0_baselines_priors__train-none__test-images-draw-describe-sample")
+def generate_0_baselines_priors__train_none__test_draw_describe_sample(args, experiment_id, stimuli_set):
     return generate_0_baselines_priors(args, experiment_id, stimuli_set)
 
-@register("0_baselines_priors__a_train-none__describe-draw-sample-interleave")
-def generate_0_baselines_priors_a_train_none_describe_draw_sample_interleave(args, experiment_id, stimuli_set):
+@register("0_baselines_priors__train-none__test-images-describe-draw-sample")
+def generate_0_baselines_priors__train_none__test_describe_draw_sample(args, experiment_id, stimuli_set):
     return generate_0_baselines_priors(args, experiment_id, stimuli_set)
     
 def generate_0_baselines_priors(args, experiment_id, stimuli_set):
@@ -176,35 +180,35 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
             all_configs.append((full_config_path, config_data))
     return all_configs
 
-@register("1_no_provided_language__a_train-images__draw-describe-sample-interleave")
-def generate_1_no_provided_language_a_train_images__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+@register("1_no_provided_language__train-images__test-images-draw-describe-sample")
+def generate_1_no_provided_language__train_images__test_images_draw_describe_sample(args, experiment_id, stimuli_set):
     return generate_1_no_provided_language(args, experiment_id, stimuli_set)
 
-@register("1_no_provided_language__b_train-images-draw__draw-describe-sample-interleave")
-def generate_1_no_provided_language_a_train_images_draw__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+@register("1_no_provided_language__train-images-draw__test-images-draw-describe-sample")
+def generate_1_no_provided_language__train_images_draw__test_images_draw_describe_sample(args, experiment_id, stimuli_set):
     return generate_1_no_provided_language(args, experiment_id, stimuli_set)
     
 def generate_1_no_provided_language(args, experiment_id, stimuli_set):
     description = "No provided language during training. Conditions on different image stimuli during training. Uses the draw, describe, and free-generation testing behaviors."
     return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
 
-@register("2_provided_language__a_train-images-descriptions__draw-describe-sample-interleave")
-def generate_2_provided_language__a_train_images_descriptions__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+@register("2_provided_language__train-images-descriptions__test-images-draw-describe-sample")
+def generate_2_provided_language__train_images_descriptions__test_images_draw_describe_sample(args, experiment_id, stimuli_set):
     return generate_2_provided_language(args, experiment_id, stimuli_set)
 
-@register("2_provided_language__b_train-images-descriptions-draw__draw-describe-sample-interleave")
-def generate_2_provided_language__b_train_images_draw_descriptions__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+@register("2_provided_language__train-images-descriptions-draw__test-images-draw-describe-sample")
+def generate_2_provided_language__train_images_descriptions_draw__test_images_draw_describe_sample(args, experiment_id, stimuli_set):
     return generate_2_provided_language(args, experiment_id, stimuli_set)
     
 def generate_2_provided_language(args, experiment_id, stimuli_set):
     description = "Provided language during training. Conditions on different language stimuli during training; images are the same. Uses the draw, describe, and free-generation testing behaviors."
     return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
 
-@register("3_producing_language__a_train-images-describe__draw-describe-sample-interleave")
+@register("3_producing_language__train-images-describe__test-draw-describe-sample")
 def generate_3_producing_language_a_train_images_describe__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_3_producing_language(args, experiment_id, stimuli_set)
 
-@register("3_producing_language__b_train-images-draw-describe__draw-describe-sample-interleave")
+@register("3_producing_language__train-images-draw-describe__test-draw-describe-sample")
 def generate_3_producing_language_a_train_images_draw_describe__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_3_producing_language(args, experiment_id, stimuli_set)
     
@@ -308,7 +312,6 @@ def get_train_phase_config(args, experiment_id, condition, train_phase_stimuli, 
         phase_config[DESCRIPTIONS] = get_description_for_images(args, condition, image_batch)
     return phase_config
 
-
 def get_train_components_from_experiment_id(experiment_id):
     train_type = experiment_id.split("__")[1]
     train_components = train_type.split(TRAIN)[-1]
@@ -326,13 +329,10 @@ def get_test_phase_config(experiment_id, test_phase_stimuli, batch_start, batch_
                 
 def get_test_components_from_experiment_id(experiment_id):
     test_type = experiment_id.split("__")[-1]
-    test_1, test_2, sample_type, should_interleave = test_type.split("-")
-    if should_interleave == "interleave":
-        return [test_1, test_2]
-    else:
-        print("Not yet implemented")
-        assert False
-        
+    test_components = test_type.split(TEST)[-1]
+    ui_components = [comp for comp in test_components.split("-") if len(comp) > 0 and comp in (DRAW, DESCRIBE)]
+    return ui_components
+    
 def set_random_seed(args):
     random.seed(args.seed)
     
@@ -340,7 +340,7 @@ def load_stimuli_set(args):
     stimuli_path = os.path.join(args.input_stimuli_set_dir, args.stimuli_set + ".json")
     with open(stimuli_path, 'r') as f:
         return json.load(f)
-    
+
 def iteratively_generate_experiment_configs(args, stimuli_set):
     for experiment in args.experiments:
         if experiment not in EXPERIMENT_CONFIG_GENERATOR_REGISTRY:
