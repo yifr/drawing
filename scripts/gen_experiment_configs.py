@@ -22,6 +22,7 @@ Usage: python gen_experiment_configs.py
 import os, json, argparse, random, copy
 import pathlib
 from datetime import datetime
+from collections import defaultdict
 
 DEFAULT_OUTPUT_DIR = "static/configs"
 INPUT_STIMULI_SET_DIR = 'static/stimuli_sets'
@@ -29,6 +30,7 @@ DEFAULT_STIMULI_SET = "train_images_test_common_s12_s13_neurips_2020"
 
 
 METADATA = "metadata"
+CONDITIONS = "conditions"
 CONDITION = "condition"
 FULL_CONFIG_PATH = "full_config_path"
 EXPERIMENT_ID = "experiment_id"
@@ -124,7 +126,7 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
         for stimuli_sub_group in test_tasks[condition]:
             all_test_stimuli += stimuli_sub_group
     condition = ALL
-    
+    conditions = [ALL]
     config_path = os.path.join(get_config_dir(experiment_id, args), condition)
     for shuffle in range(args.shuffles_per_stimuli_set):
         random.shuffle(all_test_stimuli)
@@ -139,6 +141,7 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
             
             config_data = dict()
             config_data[METADATA] = copy.copy(metadata)
+            config_data[METADATA][CONDITIONS] = conditions
             config_data[METADATA][CONDITION] = condition
             config_data[METADATA][FULL_CONFIG_PATH] = full_config_path
             config_data[EXPERIMENT_PHASES] = []
@@ -165,9 +168,14 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
 def generate_1_no_provided_language_a_train_images_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_1_no_provided_language(args, experiment_id, stimuli_set)
 
-@register("1_no_provided_language__a_train-images-draw__draw-describe-sample-interleave")
+@register("1_no_provided_language__b_train-images-draw__draw-describe-sample-interleave")
 def generate_1_no_provided_language_a_train_images_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_1_no_provided_language(args, experiment_id, stimuli_set)
+    
+    
+def generate_1_no_provided_language(args, experiment_id, stimuli_set):
+    description = "No provided language during training. Conditions on different image stimuli during training. Uses the draw, describe, and free-generation testing behaviors."
+    return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
 
 def get_n_batches_for_condition(args, condition, stimuli_set):
     """Gets the maximum number of batches given the specified train and test batch sizes"""
@@ -179,11 +187,9 @@ def get_n_batches_for_condition(args, condition, stimuli_set):
     
     n_test_batches = int(n_stimuli_per_test_phase / args.test_batch_size) + 1 if args.test_batch_size is not ALL else 1
     return max(n_train_batches, n_test_batches)
-    
-    
-def generate_1_no_provided_language(args, experiment_id, stimuli_set):
+
+def generate_batched_train_test_configs(args, description, experiment_id, stimuli_set):
     all_configs = defaultdict(lambda: defaultdict()) # (config_path, config_data)
-    description = "No provided language during training. Conditions on different image stimuli during training. Uses the draw, describe, and free-generation testing behaviors."
     
     metadata = generate_base_metadata(experiment_id, description, args)
     n_sample_phases = 1 if SAMPLE in experiment_id else 0 
@@ -219,29 +225,58 @@ def generate_1_no_provided_language(args, experiment_id, stimuli_set):
                     config_data = all_configs[full_config_path]
                     
                     batch_start = batch * batch_size
-                    batch_end = start + batch_size
-                    config_data[phase] = get_train_phase_config(experiment_id, train_phase_stimuli, batch_start, batch_end)
-            # Build test phase
-            for test_phase_idx, test
+                    batch_end = batch_start + batch_size
+                    if batch_start > len(train_phase_stimuli):
+                        # TODO (cathywong): this won't actually wrap around.
+                        assert False
+                    config_data[phase_name] = get_train_phase_config(experiment_id, train_phase_stimuli, batch_start, batch_end)
+            # Build test phases that aren't sampling based
+            test_stimuli_phases = stimuli_set[TEST].get(conditions[0], []) + stimuli_set[TEST].get(ALL, [])
+            for test_phase_idx, test_phase_stimuli in enumerate(test_stimuli_phases):
+                phase_name = get_phase_name(test_phase_idx + total_n_train_phases + 1)
+                random.shuffle(test_phase_stimuli)
+                batch_size = args.test_batch_size if args.test_batch_size is not ALL else len(test_phase_stimuli)
+                for batch in range(total_n_batches):
+                    config_name = get_config_name(batch, shuffle)
+                    full_config_path = os.path.join(config_path, config_name)
+                    config_data = all_configs[full_config_path]
+                    
+                    batch_start = batch * batch_size
+                    batch_end = batch_start + batch_size
+                    if batch_start > len(test_phase_stimuli):
+                        # TODO (cathywong): this won't actually wrap around.
+                        assert False
+                    config_data[phase_name] = get_test_phase_config(experiment_id, test_phase_stimuli, batch_start, batch_end, sampling=False)
+            # Finally, the test phase
+            for sample_phase_idx in range(n_sample_phases):
+                for batch in range(total_n_batches):
+                    config_name = get_config_name(batch, shuffle)
+                    full_config_path = os.path.join(config_path, config_name)
+                    config_data = all_configs[full_config_path]
+                    phase_name = get_phase_name(total_n_train_phases + total_n_test_phases)
+                    config_data[phase_name] = get_test_phase_config(experiment_id, None, None, None, sampling=True)
+    return all_configs.items()
 
 def get_train_phase_config(experiment_id, train_phase_stimuli, batch_start, batch_end):
     phase_config = dict()
-    image_batch = train_phase_stimuli[start:end]
+    image_batch = train_phase_stimuli[batch_start:batch_end]
     phase_config[IMAGES] = image_batch
     phase_config[SAMPLING] = False
     phase_config[UI_COMPONENTS] =  get_train_components_from_experiment_id(experiment_id)
     return phase_config
 
 def get_train_components_from_experiment_id(experiment_id):
-    train_type = experiment_id.split("__")[1]
-    train_components = train_type.split(TRAIN)
-    return train_components.split("-")
     # TODO we will need to make this more fine grained based on the descriptions later on.
-
+    train_type = experiment_id.split("__")[1]
+    train_components = train_type.split(TRAIN)[-1]
+    ui_components = [comp for comp in train_components.split("-") if len(comp) > 0]
+    return ui_components
+    
 def get_test_phase_config(experiment_id, test_phase_stimuli, batch_start, batch_end, sampling=False):
     phase_config = dict()
-    image_batch = test_phase_stimuli[start:end] if not sampling else [None] * args.sampling_batch_size    
+    image_batch = test_phase_stimuli[batch_start:batch_end] if not sampling else [None] * args.sampling_batch_size    
     phase_config[SAMPLING] = sampling
+    phase_config[IMAGES] = image_batch
     phase_config[UI_COMPONENTS] = [IMAGES] if not sampling else []
     phase_config[UI_COMPONENTS] += get_test_components_from_experiment_id(experiment_id)
     return phase_config
