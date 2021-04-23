@@ -165,16 +165,28 @@ def generate_0_baselines_priors(args, experiment_id, stimuli_set):
     return all_configs
 
 @register("1_no_provided_language__a_train-images__draw-describe-sample-interleave")
-def generate_1_no_provided_language_a_train_images_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+def generate_1_no_provided_language_a_train_images__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_1_no_provided_language(args, experiment_id, stimuli_set)
 
 @register("1_no_provided_language__b_train-images-draw__draw-describe-sample-interleave")
-def generate_1_no_provided_language_a_train_images_draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+def generate_1_no_provided_language_a_train_images_draw__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_1_no_provided_language(args, experiment_id, stimuli_set)
-    
     
 def generate_1_no_provided_language(args, experiment_id, stimuli_set):
     description = "No provided language during training. Conditions on different image stimuli during training. Uses the draw, describe, and free-generation testing behaviors."
+    return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
+
+
+@register("3_producing_language__a_train-images-describe__draw-describe-sample-interleave")
+def generate_3_producing_language_a_train_images_describe__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+    return generate_3_producing_language(args, experiment_id, stimuli_set)
+
+@register("3_producing_language__b_train-images-draw-describe__draw-describe-sample-interleave")
+def generate_3_producing_language_a_train_images_draw_describe__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
+    return generate_3_producing_language(args, experiment_id, stimuli_set)
+    
+def generate_3_producing_language(args, experiment_id, stimuli_set):
+    description = "Language production during training. Conditions on different image stimuli during training. Uses the draw, describe, and free-generation testing behaviors."
     return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
 
 def get_n_batches_for_condition(args, condition, stimuli_set):
