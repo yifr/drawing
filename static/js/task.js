@@ -10,12 +10,12 @@ function toggleModal(text) {
 	$("#infoModal").modal("show");
 }
 
-function updateProgressBar(currentPhase, stimIdx, stimsLength) {
+function updateProgressBar(currentPhase, numPhases, stimIdx, stimsLength) {
 	var percentComplete = Math.round(stimIdx / stimsLength * 100);
 	$("#progress-bar").attr("aria-valuenow", percentComplete);
 	$("#progress-bar").attr("style", "width: " + percentComplete + "%");
 	var phase = currentPhase.split("_")[1];
-	$("#currentPhase").html(phase);
+	$("#currentPhase").html(phase + "/" + numPhases);
 	$("#progress-bar").text(percentComplete + "%");
 }
 
@@ -41,7 +41,7 @@ function RenderUI(phaseConfig) {
 			$("#describe-heading").text("1. Describe a new image like the ones you've seen")
 		} 
 	} else {
-		$("#stim-col").show(); // Should be displayed by default, but in case sampling isn't last
+		$("#stim-col").show(); 
 	}
 
 	// turn on relevant components
@@ -62,6 +62,9 @@ function RenderUI(phaseConfig) {
 
 			$("#editor-container").show();
 		} else if (component === "describe") {
+			if (UIComponents.indexOf("draw") < 0) {
+				$("describe-heading").text("1. Please describe the image in the blue box")
+			}
 			$("#describe-container").css("visibility", "visible");
 		} else if (component === "images") {
 			$("#stim-container").show();
@@ -72,10 +75,7 @@ function RenderUI(phaseConfig) {
 		}
 	}
 	
-	if (dataDisplay == null) {
-		dataDisplay = 'images';
-	}
-	return dataDisplay;
+	return dataDisplay ? dataDisplay : "images";
 }
 
 function capitalize(string) {
@@ -137,6 +137,7 @@ $(document).ready(function() {
 
 			const phases = data["phases"];
 			var phaseIndex = 0;
+			var numPhases = phases.length;
 			var currentPhase = phases[phaseIndex];
 			var phaseConfig = data[currentPhase];
 
@@ -150,7 +151,7 @@ $(document).ready(function() {
 			var stimIndex = 0;
 
 			displayStim(phaseConfig, stimIndex);
-			updateProgressBar(currentPhase, stimIndex, stims.length);
+			updateProgressBar(currentPhase, numPhases, stimIndex, stims.length);
 
 			$('#next-image').on('click', function nextDrawing() {
 
@@ -174,13 +175,13 @@ $(document).ready(function() {
 				stimIndex += 1;
 				
 				// Update progress bar
-				updateProgressBar(currentPhase, stimIndex, stims.length);
+				updateProgressBar(currentPhase, numPhases, stimIndex, stims.length);
 
 				// Check if we've hit the end of a phase
 				if (stimIndex >= stims.length) {
 					phaseIndex += 1;
 					if (phaseIndex >= phases.length) {
-						data['meta']['completed'] = true
+						data["metadata"]["completed"] = true
 						logData(data); 	// log that the user completed this experiment
 						toggleModal("Experiment completed!");
 						return;	// Redirect to feedback form?
@@ -193,6 +194,7 @@ $(document).ready(function() {
 						dataDisplay = RenderUI(phaseConfig);
 						stims = phaseConfig[dataDisplay];
 						stimIndex = 0;
+						updateProgressBar(currentPhase, numPhases, stimIndex, stims.length);
 					}
 				}
 	

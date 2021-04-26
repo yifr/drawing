@@ -47,7 +47,7 @@ def generate_config(experiment_id):
     meta_config['group_type'] = group_type
     meta_config['experiment_id'] = experiment_id
     
-    config['meta'] = meta_config
+    config['metadata'] = meta_config
 
     with open('stims.json', 'r') as f:
         stims = json.load(f)
