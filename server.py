@@ -43,17 +43,6 @@ def exps():
             meta = config['metadata']
             exps.append(meta)
     
-    if request.args.get('old'):
-        exps = {'TIAN_REPLICATION_0': "draw, describe, view images - two phases",
-                'sample_img': 'one phase - sample drawings only',
-                'sampleText': 'one phase - sample text only',
-                'sampleAll': 'one phase - sample drawing and description',
-                'drawOnly': 'two phases - collect only drawings',
-                'describeOnly': 'two phases - collect only descriptions',
-                'readDescriptions': 'two phases - read descriptions and draw/describe. Slow right now because descriptions are pulled from massive random word library that comes with linux',
-                'bothStims': 'two phases - read descriptions, see images and draw/describe. Slow right now because descriptions are pulled from massive random word library that comes with linux',
-                }
-
     return Response(json.dumps(exps),  mimetype='application/json') 
 
 @app.route('/record_data', methods=['POST'])
@@ -66,9 +55,37 @@ def log_data():
         status = db_utils.record(data)
         return json.dumps(status), 200, {'ContentType':'application/json'} 
 
+def instruction_pages(config):
+    elements = set()
+    for phase in config.get('phases'):
+        for element in phase['ui_components']:
+            elements.add(element)
+        if 'sampling' in phase:
+            elements.append('sample')
+    
+    instruction_pages = ['instructions/overview.html']
+    tasks = []
+    if 'draw' in elements:
+        tasks.append('Draw an image')
+        instruction_pages.append('instructions/drawing-instructions-1.html')
+        instruction_pages.append('instructions/drawing-instructions-2.html')
+
+    if 'describe' in elements:
+        tasks.append('Describe an image')
+        instruction_pages.append('instructions/describe-instructions.html')
+    
+    if 'sample' in elements:
+        tasks.append('Create new images and descriptions')
+
+    return tasks, instruction_pages
+
 @app.route('/instructions', methods=['GET'])
 def instructions():
-    return render_template('instructions/instruction-all.html')
+    index = request.data.get('index')
+    if not index:
+        index = 0
+    tasks, instruction_pages = instruction_pages(session.get('config', {}))
+    return render_template(instruction_pages[index], index=index, tasks=tasks)
 
 @app.route('/experiment_config', methods=['GET'])
 def get_config():
@@ -78,11 +95,8 @@ def get_config():
         f.write("experiment_id: " + str(experiment_id))
         f.write("condition: " + str(condition))
 
-    if experiment_id and condition:
-        config_path = os.path.join('static/configs', experiment_id, condition, 'batch_0_shuffle_0.json')
-        config = json.load(open(config_path, 'r'))
-        
-    elif experiment_id:
+    """        
+    else: 
         exp_path = os.path.join('static/configs', experiment_id)
         experiment_configs = []
         for root, dirs, files in os.walk(exp_path, topdown=False):
@@ -92,12 +106,19 @@ def get_config():
              
         config_path = np.random.choice(experiment_configs)
         config = json.load(open(config_path, 'r'))
-    
-    elif condition:
+    """ 
+    if experiment_id and condition:
+        config_path = os.path.join('static/configs', experiment_id, condition, 'batch_0_shuffle_0.json')
+        config = json.load(open(config_path, 'r'))
+    else:
         exp_path = os.path.join('static/configs')
         experiment_configs = []
         for root, dirs, files in os.walk(exp_path, topdown=False):
-            dirs = [d for d in dirs if d == condition]  # TODO: @Yoni this is probably super buggy
+            if experiment_id:
+                dirs = [d for d in dirs if d == experiment_id]  
+            elif condition:
+                dirs = [d for d in dirs if d == condition]  # TODO: @Yoni this is probably super buggy
+
             for name in files:
                 fname = os.path.join(root, name)
                 experiment_configs.append(fname)
@@ -105,14 +126,12 @@ def get_config():
         config_path = np.random.choice(experiment_configs)
         config = json.load(open(config_path, 'r'))
     
-    else:
-        experiment_id = 'TIAN_REPLICATION_0'
-        config = generate_config(experiment_id)
 
     config['metadata']['user_id'] = session['user_id']
     config['metadata']['study_id'] = session['study_id']
     config['metadata']['session_id'] = session['session_id']
-
+    
+    session['config'] = config
     return jsonify(config)
 
 @app.route('/experiment', methods=['GET'])
@@ -134,6 +153,10 @@ def experiment():
         session['condition'] = condition
         
         return render_template("experiment.html")
+
+@app.route('/consent', methods=['GET'])
+def consent():
+    return render_template("consent.html")
 
 @app.errorhandler(404)
 def not_found(error):
