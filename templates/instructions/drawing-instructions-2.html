@@ -20,45 +20,33 @@
 			</div>
 
 			<div class="row">
-				<h3>In this task you will be asked to draw some pictures.</h3>
-				<div class="col-6">
-					<p> A picture may look something like: </p>
-					<img src="static/images/triangle.png" style="border: solid 5px blue; width: 400; height: 400"/>
-				</div>
-				<div class="col-6">
-					<p> This is one way someone might draw that image:</p>
-					<img style="width: 400; height: 410; border: solid white 5px;" src="static/images/draw_triangle.gif" />
-				</div>
-			</div>
-			<div class="row" style="margin-top: 20px; margin-bottom: 20px;">
-				<div class="col" align="center">
-					<p> Now you try! Press your mouse down in this sketchpad area to draw:<br>
-					<strong> Note: There is no erase option - once you put a mark down it's permanent! </strong></p>
-					<div id="editor"></div>
-				</div>
-			</div>
+				<div class="col">
+                    <h3> <strong> There is no erase button or undo button on the sketchpad! </strong> </h3>
+                    <p> If you make a small mistake on a picture, don't try to cross it out - instead, try to finish the picture as correctly as possible.
+                    </p>
+                </div>
+		</div>
+        <div class="row">
+            <div class="col-6">
+                <h3> Good! </h3>
+                <img src="static/images/saved_drawing.gif", style="width: 400; height: 400" />
+            </div>
+            <div class="col-6">
+                <h3> Bad! </h3>
+                <img src="static/images/botched_drawing.gif", style="width: 400; height: 400" />
+            </div>
+        </div>
 			<br><br>
 			<a href="instructions?index={{ index + 1 }}"> 
 				<button class="btn btn-lg btn-block btn-primary" id="next-page" style="margin-bottom: 20px" disabled>
 					<span style="color: white">Next Page</span>
 				</button>
 			</a>
-
-		</div>
 	</body>
 	<script type="text/javascript">
-
-		var sketchpad = Raphael.sketchpad("editor", { 
-			width: 400,
-			height: 400,
-			editing: true,
-		});
-
-		var pen = sketchpad.pen();
-		pen.width(2);
-
-		sketchpad.change(function() {
+		setTimeout(function(){
 			$("#next-page").prop("disabled", false);
-		});
+		}, 6000)
+
 	</script>
 </html>

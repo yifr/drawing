@@ -8,7 +8,7 @@ from flask import request
 from flask import session
 from flask import Response
 from flask import jsonify
-from flask import render_template, redirect
+from flask import render_template, redirect, url_for
 from logging.config import dictConfig
 
 dictConfig({
@@ -29,8 +29,6 @@ dictConfig({
 
 app = Flask(__name__)
 app.secret_key = certs.secret_app_key
-
-EXPERIMENT_ID = 'TIAN_REPLICATION_0'
 
 @app.route('/experiment_types', methods=['GET'])
 def exps():
@@ -58,52 +56,57 @@ def get_instruction_pages(config):
     elements = set()
     instruction_pages = ['instructions/overview.html']
     tasks = []
+
     for phase in config.get('phases', []):
         for element in config[phase]['ui_components']:
             elements.add(element)
-        if 'sampling' in phase:
-            elements.append('sample')
+        if config[phase].get('sampling'):
+            elements.add('sample')
 
     if 'draw' in elements:
-        tasks.append('Draw an image')
+        tasks.append('Draw a series of images')
         instruction_pages.append('instructions/drawing-instructions-1.html')
         instruction_pages.append('instructions/drawing-instructions-2.html')
 
     if 'describe' in elements:
-        tasks.append('Describe an image')
-        instruction_pages.append('instructions/describe-instructions.html')
+        tasks.append('Describe a series of images')
+        instruction_pages.append('instructions/describing-instructions-1.html')
 
     if 'sample' in elements:
         tasks.append('Create new images and descriptions')
 
+    instruction_pages.append('instructions/begin.html')
     return tasks, instruction_pages
 
 @app.route('/instructions', methods=['GET'])
 def instructions():
-    user_id = request.args.get('PROLIFIC_PID')
-    study_id = request.args.get('STUDY_ID')
-    session_id = request.args.get('SESSION_ID')
-    experiment_id = request.args.get('experiment_id')
-    condition = request.args.get('condition')
+    if not session['config']:
+        user_id = request.args.get('PROLIFIC_PID')
+        study_id = request.args.get('STUDY_ID')
+        session_id = request.args.get('SESSION_ID')
+        experiment_id = request.args.get('experiment_id')
+        condition = request.args.get('condition')
 
-    app.logger.info("experiment id " + str(experiment_id))
-    app.logger.info("condition: " + str(condition))
+        app.logger.info("experiment id " + str(experiment_id))
+        app.logger.info("condition: " + str(condition))
 
-    session['user_id'] = user_id
-    session['study_id'] = study_id
-    session['session_id'] = session_id
-    session['experiment_id'] = experiment_id
-    session['condition'] = condition
+        session['user_id'] = user_id
+        session['study_id'] = study_id
+        session['session_id'] = session_id
+        session['experiment_id'] = experiment_id
+        session['condition'] = condition
 
-    get_config()
+        get_config()
 
-    index = request.args.get('index')
-    if not index:
-        index = 0
-
+    index = request.args.get('index', 0, type=int)
     tasks, instruction_pages = get_instruction_pages(session['config'])
-    print(instruction_pages[int(index)])
-    return render_template(instruction_pages[int(index)], index=int(index), tasks=tasks)
+    n_phases = len(session['config']['phases'])
+    print(index, instruction_pages)
+
+    if int(index) >= len(instruction_pages):
+        return render_template("experiment.html")
+    else:
+        return render_template(instruction_pages[int(index)], index=int(index), tasks=tasks, n_phases=n_phases)
 
 @app.route('/experiment_config', methods=['GET'])
 def get_config():

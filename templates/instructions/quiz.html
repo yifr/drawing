@@ -13,35 +13,33 @@
 	</head>
 
 	<body>
-		<div class="container" style="margin-top: 20px"> 
+		<div class="container" align=center> 
 			<div class="row">
 				<div class="col">
-					<h1 style="font-size: 48px"> Experiment Overview </h1>
+					<h1 style="font-size: 48px"> Are you ready to begin? </h1>
 				</div>
 			</div>
 
-			<div class="row" style="font-size: 24px; line-height: 1.5">
+			<div class="row" style="margin-top: 100px;">
 				<div class="col">
-					<p> In this experiment, you will be asked to:
-				 	<ul id="experiment-tasks">
-						{% for task in tasks %}
-						<li> {{ task }} </li>
-						{% endfor %}
-					</ul>
-					</p>
-					<p> Your tasks will be divided into <strong> {{ n_phases }} phases</strong>. In total, this experiment is expected to take
-					approximately 45 minutes. You will be compensated at a base rate of $15/hr for a total of $11.25, subject to an additional
-					bonus of $3 if you perform well.
+					<a href="instructions?index=0" style="text-decoration: none"> 
+						<button class="btn btn-lg btn-block btn-warning" style="margin-bottom: 20px">
+							<span style="color: white;">Restart Instructions</span>
+						</button>
+					</a>
 				</div>
-			</div>
-			<br><br>
-			<div class="row">
-				<button class="btn btn-lg btn-block btn-primary" id="next-page" style="margin-bottom: 20px">
-					<a href="instructions?index={{ index + 1 }}"> <span style="color: white">Next Page</span></a> 
-				</button>
-			</div>
+				<div class="col">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				
+				<a href="experiment"> 
+					<button class="btn btn-lg btn-block btn-primary" id="next-page" style="margin-bottom: 20px">
+						<span style="color: white">Begin Experiment</span>
+					</button>
+				</a> 
+				</div>
+
 		</div>	
-
-	
 	</body>
 </html>
