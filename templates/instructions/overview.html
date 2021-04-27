@@ -44,7 +44,10 @@
 
 	<script type="text/javascript">
 		$("#next-page").on("click", function() {
-			$.get("next_instructions", {'index': {{ index + 1 }} })	
+			$.get("instructions", {'index': {{ index + 1 }} })	
+                .done(function(response) {
+                    document.write(response);
+                });
 		});
 	</script>
 	</body>

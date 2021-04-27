@@ -45,17 +45,6 @@
 		</div>
 
 		<script type="text/javascript">
-			var strokes = [["M",10,10],["L",390,390]];
-/*
-			var animator = Raphael.sketchpad("viewer", { 
-				width: 400,
-				height: 400,
-				strokes: strokes,
-				editing: false, 
-			});
-			$("#viewer").find("svg").css("border", "solid 1px");
-			animator.animate(500);
-*/
 
 			var sketchpad = Raphael.sketchpad("editor", { 
 				width: 400,
@@ -69,6 +58,15 @@
 			sketchpad.change(function() {
 				$("#next-page").prop("disabled", false);
 			});
+		
+
+            $("#next-page").on("click", function() {
+                $.get("instructions", {'index': {{ index + 1 }} })	
+                    .done(function(response) {
+                        document.write(response);
+                    });
+                });
+
 		</script>
 	</body>
 </html>

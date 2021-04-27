@@ -1,10 +1,10 @@
 import pymongo
-import certs
+from .import certs
 import json
 
 DATABASE = 'laps'
 UNAME = certs.mongo_uname
-PASSWORD = certs.mongo_pwd  
+PASSWORD = certs.mongo_pwd
 
 def open_connection():
     conn_str = "mongodb+srv://%s:%s@cluster0.aqpv0.mongodb.net/%s?retryWrites=true&w=majority" % (UNAME, PASSWORD, DATABASE)
@@ -36,7 +36,7 @@ def record(data):
         return {'success': False, 'message': 'User already completed experiment'}
 
     result = collection.replace_one({'meta.user_id': user_id}, data, upsert=True)
-    
+
     print(result)
 
     if result:
