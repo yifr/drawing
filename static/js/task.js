@@ -1,4 +1,4 @@
-var DEBUG = true;
+var DEBUG = false;
 var sketchpad = null;
 
 function closeModal() {
@@ -215,7 +215,7 @@ $(document).ready(function() {
 						data["metadata"]["completed"] = true
 						logData(data); 	// log that the user completed this experiment
 						toggleModal("Experiment completed!");
-						window.location.href = "/feedback";	// Redirect to feedback form?
+						window.location.href = "feedback";	// Redirect to feedback form?
 
 					} else {
 						currentPhase = phases[phaseIndex];

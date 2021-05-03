@@ -1,7 +1,7 @@
 import os
 import json
-from . import certs
-from . import db_utils
+import certs
+import db_utils
 import numpy as np
 from flask import Flask
 from flask import request

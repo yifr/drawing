@@ -51,18 +51,19 @@
 		</div>
 	</body>
 	<script type="text/javascript">
+		if(False) {
+			var sketchpad = Raphael.sketchpad("editor", { 
+				width: 600,
+				height: 600,
+				editing: true,
+			});
 
-		var sketchpad = Raphael.sketchpad("editor", { 
-			width: 400,
-			height: 400,
-			editing: true,
-		});
+			var pen = sketchpad.pen();
+			pen.width(2);
 
-		var pen = sketchpad.pen();
-		pen.width(2);
-
-		sketchpad.change(function() {
-			$("#next-page").prop("disabled", false);
-		});
+			sketchpad.change(function() {
+				$("#next-page").prop("disabled", false);
+			});
+		}
 	</script>
 </html>

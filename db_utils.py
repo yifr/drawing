@@ -1,5 +1,5 @@
 import pymongo
-from .import certs
+import certs
 import json
 
 DATABASE = 'laps'
