@@ -24,8 +24,15 @@
 
 		<div class="row">
 			<div class="col">
-				<h3> In this task you will be asked to give a <strong>short and clear description of images.</strong></h3>
-				<p> Describe the following picture to continue</p>
+				<h2> Description instructions </h2>
+				<br>
+				<p> Your descriptions will be looked at by another human subject, along with the original image. 
+					As long as they determine that your description was an understandable attempt to write a 
+					short, clear description of the original image, you will receive a bonus for that description task.
+				</p>
+				<p>
+					However, if your answers obviously do not reflect the original image, you will not receive a bonus.
+				</p>
 			</div>
 		</div>
 		<div class="row">
@@ -37,30 +44,32 @@
 					<div class="col">
 					</div>
 					<div class="row">
+						<h3>Bad description!</h3>
 						<div class="col">
-							<textarea rows=4 cols=30 id="describe" placeholder="Enter description here..."></textarea>
+							<textarea rows=4 cols=30 id="describe" placeholder="Enter description here...">  asdfljsalk</textarea>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<br><br>
-		<div class="row">
-			<a href="instructions?index={{ index + 1 }}">
-				<button class="btn btn-lg btn-block btn-primary" id="next-page" style="margin-bottom: 20px" disabled>
-					<span style="color: white">Next Page</span>
+		<div class="row">	
+			<div class="col gap-2 d-lg-flex justify-content-start">
+				<a href="instructions?index={{ index - 1 }}">
+					<button class="btn btn-lg btn-secondary" id="prev-page" style="margin-bottom: 20px">
+						<span style="color: white">Back</span>
+					</button>
+				</a>
+			</div>
+			<div class="col gap-2 d-lg-flex justify-content-end">
+				<button class="btn btn-lg btn-primary" id="next-page" style="margin-bottom: 20px" 
+					type="button" onclick="window.location.href='instructions?index={{ index + 1 }}'">
+					<span style="color: white">Next</span>
 				</button>
-			</a>
+			</div>
 		</div>
 	</div>
 </body>
 
-<script type="text/javascript">
-	$("#describe").on('input selectionchange propertychange', function () {
-		if ($("#describe").val().length > 5) {
-			$("#next-page").prop("disabled", false);
-		}
-	})
-</script>
 
 </html>

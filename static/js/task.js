@@ -23,6 +23,7 @@ function RenderUI(phaseConfig) {
 	var UIComponents = phaseConfig['ui_components'];
 
 	// Turn everything off first
+	$("#user-input-col").hide();
 	$("#descriptions-container").hide();
 	$("#editor-container").hide();
 	$("#stim-container").hide();
@@ -51,8 +52,8 @@ function RenderUI(phaseConfig) {
 			// Create sketchpad
 			if (sketchpad == null) { 
 				sketchpad = Raphael.sketchpad("editor", {
-					width: 400,
-					height: 400,
+					width: 600,
+					height: 600,
 					border: "solid",
 					editing: true
 				});
@@ -61,11 +62,13 @@ function RenderUI(phaseConfig) {
 			pen.width(2);
 
 			$("#editor-container").show();
+			$("#user-input-col").show()
 		} else if (component === "describe") {
 			if (UIComponents.indexOf("draw") < 0) {
 				$("describe-heading").text("1. Please describe the image in the blue box")
 			}
 			$("#describe-container").css("visibility", "visible");
+			$("#user-input-col").show()
 		} else if (component === "images") {
 			$("#stim-container").show();
 			dataDisplay = "images";	// Update data display 
@@ -97,6 +100,34 @@ function displayStim(phaseConfig, stimIndex) {
 	}
 }
 
+function getPhaseDescription(phaseConfig, phaseIndex) {
+	var message = "<h1>Moving onto Phase " + phaseIndex + ":</h1>";
+	message += "<p>In this phase, you will be:</p><ul>";
+
+	if (phaseConfig["sampling"]) {
+		message += "<li>Creating new drawings and descriptions. </li></ul> \
+		<p>Remember, someone else will see these images. They should be able to verify that \
+		they look similar to the other images you've seen.</p>";
+	
+		return message;
+	}
+
+	for (i=0; i < UIComponents.length; i++) {
+		var component = UIComponents[i];
+		if (component === "draw") {
+			message += "<li>Copying images onto a sketchpad</li>";
+		} else if (component === "describe") {
+			message += "<li>Describing those images in text</li>"
+		} else if (component === "images") {
+			message += "<li>Looking at images </li>";	// Update data display 
+		} else if (component === "descriptions") {
+			message += "<li>Reading descriptions of images</li>";	// Update data display
+		}
+	}
+	message += "</ul><p>Good luck!</p>"
+	return message;
+}
+
 function logData(data) {
 	$.ajax({
 		type: "POST",
@@ -118,7 +149,7 @@ function recordTrial(data, phase) {
 	}
 	
 	// Get strokes and user descriptions
-	var strokes = sketchpad ? sketchpad.strokes() : []
+	var strokes = sketchpad ? sketchpad.json() : []
 	data[phase]["strokes"].push(strokes);
 	var userDescription = $("#describe").val();
 	data[phase]["user_descriptions"].push(userDescription);	
@@ -184,13 +215,14 @@ $(document).ready(function() {
 						data["metadata"]["completed"] = true
 						logData(data); 	// log that the user completed this experiment
 						toggleModal("Experiment completed!");
-						return;	// Redirect to feedback form?
+						window.location.href = "/feedback";	// Redirect to feedback form?
 
 					} else {
 						currentPhase = phases[phaseIndex];
 						phaseConfig = data[currentPhase];
 						var phase = currentPhase.split("_")[1];
-						toggleModal("Moving onto Phase " + phase + "!");
+						var message = getPhaseDescription(phaseConfig, phase);						
+						toggleModal(message);
 						dataDisplay = RenderUI(phaseConfig);
 						stims = phaseConfig[dataDisplay];
 						stimIndex = 0;

@@ -20,45 +20,44 @@
 			</div>
 
 			<div class="row">
-				<h3>In this task you will be asked to draw some pictures.</h3>
-				<div class="col-6">
-					<p> A picture may look something like: </p>
+				<h2><strong>Only viewing Instructions</strong>.</h2>
+				<div class="col">
+					<br>
+					<h2> In some phases, you will see nothing but an image. </h2>
+					<p> An image will appear in a blue box, and might look something like: </p>
 					<img src="static/images/triangle.png" style="border: solid 5px blue; width: 400; height: 400"/>
+					<br><br>
+					<p>You will be asked to look at the image for <i> at least 3 seconds.</i> You do not need to memorize the image,
+						and we will not ask you about it later. After 3 seconds, whenever you feel like you have a good idea of what 
+						the image looks like, you can click the "Next" button to continue on to the next image.
+					</p>
 				</div>
-				<div class="col-6">
-					<p> This is one way someone might draw that image:</p>
-					<img style="width: 400; height: 410; border: solid white 5px;" src="static/images/draw_triangle.gif" />
-				</div>
+				
 			</div>
-			<div class="row" style="margin-top: 20px; margin-bottom: 20px;">
-				<div class="col" align="center">
-					<p> Now you try! Press your mouse down in this sketchpad area to draw:<br>
-					<strong> Note: There is no erase option - once you put a mark down it's permanent! </strong></p>
-					<div id="editor"></div>
-				</div>
-			</div>
+
 			<br><br>
-			<a href="instructions?index={{ index + 1 }}"> 
-				<button class="btn btn-lg btn-block btn-primary" id="next-page" style="margin-bottom: 20px" disabled>
-					<span style="color: white">Next Page</span>
-				</button>
-			</a>
+
+			<div class="row">	
+				<div class="col gap-2 d-lg-flex justify-content-start">
+					<a href="instructions?index={{ index - 1 }}">
+						<button class="btn btn-lg btn-secondary" id="prev-page" style="margin-bottom: 20px">
+							<span style="color: white">Back</span>
+						</button>
+					</a>
+				</div>
+				<div class="col gap-2 d-lg-flex justify-content-end">
+					<button class="btn btn-lg btn-primary" id="next-page" style="margin-bottom: 20px" 
+						type="button" onclick="window.location.href='instructions?index={{ index + 1 }}'" disabled>
+						<span style="color: white">Next</span>
+					</button>
+				</div>
+			</div>
 
 		</div>
 	</body>
 	<script type="text/javascript">
-
-		var sketchpad = Raphael.sketchpad("editor", { 
-			width: 400,
-			height: 400,
-			editing: true,
-		});
-
-		var pen = sketchpad.pen();
-		pen.width(2);
-
-		sketchpad.change(function() {
+		setTimeout(function(){
 			$("#next-page").prop("disabled", false);
-		});
+		}, 3000);
 	</script>
 </html>

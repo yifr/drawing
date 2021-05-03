@@ -53,39 +53,60 @@ def log_data():
         return json.dumps(status), 200, {'ContentType':'application/json'}
 
 def get_instruction_pages(config):
-    elements = set()
-    instruction_pages = ['instructions/overview.html']
+    instruction_pages = ['instructions/overview-1.html',
+                        'instructions/overview-2.html',
+                        'instructions/overview-3.html',
+                        'instructions/overview-4.html']
     tasks = []
-
+    elements = set()
     for phase in config.get('phases', []):
-        for element in config[phase]['ui_components']:
-            elements.add(element)
+        phase_elements = set(config[phase]['ui_components'])
+        elements.update(phase_elements)
+
+        if 'draw' not in phase_elements and 'describe' not in phase_elements:
+            elements.add('look-only')
+
         if config[phase].get('sampling'):
             elements.add('sample')
 
-    if 'draw' in elements:
-        tasks.append('Draw a series of images')
-        instruction_pages.append('instructions/drawing-instructions-1.html')
-        instruction_pages.append('instructions/drawing-instructions-2.html')
+    print(elements)
+    if 'images' in elements:
+        tasks.append('Look at images')
 
+    if 'look-only' in elements:
+        instruction_pages.append('instructions/look-only.html')
+
+    if 'draw' in elements:
+        tasks.append('Draw an image yourself')
+        instruction_pages.append('instructions/drawing-1.html')
+        instruction_pages.append('instructions/drawing-2.html')
+        instruction_pages.append('instructions/drawing-3.html')
+
+    if 'descriptions' in elements:
+        tasks.append('Interpret descriptions of images')
+    
     if 'describe' in elements:
-        tasks.append('Describe a series of images')
-        instruction_pages.append('instructions/describing-instructions-1.html')
+        tasks.append('Describe an image yourself')
+        instruction_pages.append('instructions/describing-1.html')
+        instruction_pages.append('instructions/describing-2.html')
 
     if 'sample' in elements:
-        tasks.append('Create new images and descriptions')
+        tasks.append('Draw and describe new images like the ones you have seen')
+        instruction_pages.append('instructions/sampling-1.html')
+        instruction_pages.append('instructions/sampling-2.html')
 
-    instruction_pages.append('instructions/begin.html')
+    instruction_pages.append('instructions/quiz.html')
     return tasks, instruction_pages
 
 @app.route('/instructions', methods=['GET'])
 def instructions():
-    if not session['config']:
+    if request.args.get('experiment_id') or request.args.get('condition') or not session['config']:
         user_id = request.args.get('PROLIFIC_PID')
         study_id = request.args.get('STUDY_ID')
         session_id = request.args.get('SESSION_ID')
         experiment_id = request.args.get('experiment_id')
         condition = request.args.get('condition')
+        app.logger.info('Generating config for: ')
 
         app.logger.info("experiment id " + str(experiment_id))
         app.logger.info("condition: " + str(condition))
@@ -98,10 +119,10 @@ def instructions():
 
         get_config()
 
-    index = request.args.get('index', 0, type=int)
+    print(session['config']['metadata']['experiment_id'])
+    index = max(0, request.args.get('index', 0, type=int))
     tasks, instruction_pages = get_instruction_pages(session['config'])
     n_phases = len(session['config']['phases'])
-    print(index, instruction_pages)
 
     if int(index) >= len(instruction_pages):
         return render_template("experiment.html")
@@ -110,10 +131,6 @@ def instructions():
 
 @app.route('/experiment_config', methods=['GET'])
 def get_config():
-    if session.get('config'):
-        config = session['config']
-        return jsonify(config)
-
     experiment_id = session.get('experiment_id')
     condition = session.get('condition')
 
@@ -131,11 +148,15 @@ def get_config():
 
             for name in files:
                 fname = os.path.join(root, name)
+                if experiment_id and experiment_id not in fname:
+                    continue
+                if condition and condition not in fname:
+                    continue
+                print(fname)
                 experiment_configs.append(fname)
 
         config_path = np.random.choice(experiment_configs)
         config = json.load(open(config_path, 'r'))
-
 
     config['metadata']['user_id'] = session['user_id']
     config['metadata']['study_id'] = session['study_id']
@@ -167,8 +188,29 @@ def experiment():
 
 @app.route('/consent', methods=['GET'])
 def consent():
+    if request.args:
+            user_id = request.args.get('PROLIFIC_PID')
+            study_id = request.args.get('STUDY_ID')
+            session_id = request.args.get('SESSION_ID')
+            experiment_id = request.args.get('experiment_id')
+            condition = request.args.get('condition')
+
+            app.logger.info("experiment id " + str(experiment_id))
+            app.logger.info("condition: " + str(condition))
+
+            session['user_id'] = user_id
+            session['study_id'] = study_id
+            session['session_id'] = session_id
+            session['experiment_id'] = experiment_id
+            session['condition'] = condition
+
     return render_template("consent.html")
 
 @app.errorhandler(404)
 def not_found(error):
     return render_template('error.html'), 404
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    if request.method == 'GET': 
+        return render_template("questionnaire.html")

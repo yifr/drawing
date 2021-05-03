@@ -22,23 +22,25 @@
 
 			<div class="row" style="font-size: 24px; line-height: 1.5">
 				<div class="col">
-					<p> In this experiment, you will be asked to:
-				 	<ul id="experiment-tasks">
-						{% for task in tasks %}
-						<li> {{ task }} </li>
-						{% endfor %}
-					</ul>
-					</p>
-					<p> Your tasks will be divided into <strong> {{ n_phases }} phases</strong>. In total, this experiment is expected to take
-					approximately 45 minutes. You will be compensated at a base rate of $15/hr for a total of $11.25, subject to an additional
-					bonus of $3 if you perform well.
+					
+					<p> Welcome to the experiment! Click the next and back buttons to navigate through the instructions </p>
 				</div>
 			</div>
 			<br><br>
-			<div class="row">
-				<button class="btn btn-lg btn-block btn-primary" id="next-page" style="margin-bottom: 20px">
-					<a href="instructions?index={{ index + 1 }}"> <span style="color: white">Next Page</span></a> 
-				</button>
+			<div class="row">	
+				<div class="col gap-2 d-lg-flex justify-content-start">
+					<a href="instructions?index={{ index - 1 }}">
+						<button class="btn btn-lg btn-secondary" id="prev-page" style="margin-bottom: 20px">
+							<span style="color: white">Back</span>
+						</button>
+					</a>
+				</div>
+				<div class="col gap-2 d-lg-flex justify-content-md-end">
+					<button class="btn btn-lg btn-primary" id="next-page" style="margin-bottom: 20px" 
+						type="button" onclick="window.location.href='instructions?index={{ index + 1 }}'">
+						<span style="color: white">Next</span>
+					</button>
+				</div>
 			</div>
 		</div>	
 

@@ -17,7 +17,7 @@
 <div class="container-fluid">
 	<div class="row">
 		<h1> [Phase <span id="currentPhase"></span>]</h1>
-		<div class="progress">
+		<div class="progress" style="margin-bottom: 20px; height: 30px;">
 			<div id="progress-bar" class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
 		</div>
 	</div>
@@ -25,28 +25,28 @@
 		<div class="col" id="stim-col">
 			<div class="row" id="stim-top">
 				<div class="col" id="stim-container" align="center" style="display: none;">
-					<h1> Original: </h1>
-					<img id="stim" src="static/images/blank.png" alt="stim" />
+					<h4>Original image:</h4>
+					<img id="stim" src="static/images/blank.png" alt="stim" style="width:600; height:600;" />
 				</div>
 			</div>
 			<div class="row" id="stim-bottom">
 				<div class="col" id="descriptions-container" align="center" style="display: none;">			
-					<h1> Instructions: </h1>
-					<h4 id="descriptions"></h4>
+					<h1> This image is... </h1>
+					<h4 id="descriptions" style="width: 600px;"></h4>
 				</div>
 			</div>
 		</div>
 		<div class="col" id="user-input-col">
 			<div class="row" id="user-input-top">
 				<div class="col" id="editor-container" align="center" style="display: none;">
-					<h4 id="editor-heading"> 1. Please draw the image in the blue box: </h4>
+					<h4 id="editor-heading"> Please draw the image in the blue box: </h4>
 					<div id="editor"></div>
 				</div>
 			</div>
 			<div class="row" id="user-input-bottom" style="margin-top:10px;">
 				<div class="col" id="describe-container" align="center" style="visibility: hidden">
-					<h4 id="describe-heading"> 2. Please describe the image in the blue box: </h4>
-					<textarea rows="3" cols="35" id="describe" placeholder="Enter description here..."></textarea>
+					<h4 id="describe-heading"> Please describe the image in the blue box: </h4>
+					<textarea rows="3" cols="50" id="describe" placeholder=" In this image there is..."></textarea>
 				</div>
 			</div>
 		</div>
@@ -54,7 +54,7 @@
 
 	<div class="row" style="margin-top: 10px">
 		<div class="col" align="center">
-			<button class="btn btn-lg btn-primary" id="next-image">Next</button>
+			<button class="btn btn-primary btn-lg" id="next-image">Next</button>
 		</div>
 	</div>
 
@@ -66,10 +66,10 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <h5 id="infoModal-text" style="align: center"></h5>
-      </div>
-      <div class="modal-footer" style="align:center">
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <h5 id="infoModal-text" style="float: center"></h5>
+		<br>
+		<button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+
       </div>
     </div>
   </div>

@@ -20,9 +20,15 @@
 			</div>
 
 			<div class="row">
+				<h2><strong>Drawing Task Instructions</strong></h2>
+				<br>
 				<div class="col">
-                    <h3> <strong> There is no erase button or undo button on the sketchpad! </strong> </h3>
-                    <p> If you make a small mistake on a picture, don't try to cross it out - instead, try to finish the picture as correctly as possible.
+                    <p> <strong>How to get a bonus: </strong> </p>
+					<p>
+						Your drawings will be shown to another participant, alongside the original image.
+						As long as they can determine that <i>your image</i> was a <i>recognizable attempt to copy the original image</i> you will 
+						receive a bonus for that drawing task. It's OK if you make a small mistake; however, if your answers obviously do not reflect 
+						the original image, you will not receive a bonus. 
                     </p>
                 </div>
 		</div>
@@ -37,16 +43,26 @@
             </div>
         </div>
 			<br><br>
-			<a href="instructions?index={{ index + 1 }}"> 
-				<button class="btn btn-lg btn-block btn-primary" id="next-page" style="margin-bottom: 20px" disabled>
-					<span style="color: white">Next Page</span>
-				</button>
-			</a>
+			<div class="row">	
+				<div class="col gap-2 d-lg-flex justify-content-start">
+					<a href="instructions?index={{ index - 1 }}">
+						<button class="btn btn-lg btn-secondary" id="prev-page" style="margin-bottom: 20px">
+							<span style="color: white">Back</span>
+						</button>
+					</a>
+				</div>
+				<div class="col gap-2 d-lg-flex justify-content-md-end">
+					<button class="btn btn-lg btn-primary" id="next-page" style="margin-bottom: 20px" 
+						type="button" onclick="window.location.href='instructions?index={{ index + 1 }}'" disabled>
+						<span style="color: white">Next</span>
+					</button>
+				</div>
+			</div>
 	</body>
 	<script type="text/javascript">
 		setTimeout(function(){
 			$("#next-page").prop("disabled", false);
-		}, 6000)
+		}, 4000)
 
 	</script>
 </html>

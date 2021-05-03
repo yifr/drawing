@@ -1,6 +1,6 @@
 #editor {
-	width: 405px;
-	height: 405px;
+	width: 605;
+	height: 605px;
 	border: 1px solid gray;
 }
 
@@ -16,9 +16,18 @@
 	margin: 0 auto;
 }
 
+p {
+  font-size: 22px;
+  text-align: left;
+}
+
 .progress {
 	height: 40px;
 	margin-top: 10px;
+}
+
+#progress-bar{
+  font-size: 18px;
 }
 
 /* text styling */
