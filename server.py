@@ -214,3 +214,14 @@ def not_found(error):
 def feedback():
     if request.method == 'GET': 
         return render_template("questionnaire.html")
+    if request.method == 'POST':
+        data = {}
+        for k, v in request.form.items():
+            data[k] = v
+        
+        user_id = session['user_id']
+        experiment_id = session['experiment_id']
+
+        db_utils.update_record(user_id, experiment_id, data)
+
+        return redirect("thank-you.html")

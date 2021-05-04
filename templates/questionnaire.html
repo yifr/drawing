@@ -22,7 +22,7 @@
 
         <div class="instructions well">
 
-            <form id="postquiz" action="/feedback" method="post">
+            <form id="postquiz" action="feedback" method="post">
 
 
                 <!-- beginning of a question -->
@@ -31,7 +31,7 @@
                         What device did you use to make your drawings?
                     </div>
                     <div class="col-md-4">
-                        <select id="device" name="device">
+                        <select id="device" name="device" required>
                             <option value="mousetable">Mouse (e.g., on tabletop)</option>
                             <option value="mousepad">Mousepad (e.g., on laptop)</option>
                             <option value="touchscreen">Touchscreen (laptop, tablet, phone)</option>
@@ -49,7 +49,7 @@
                         Which hand did you use?
                     </div>
                     <div class="col-md-4">
-                        <select id="hand" name="hand">
+                        <select id="hand" name="hand" required>
                             <option value="Right">Right</option>
                             <option value="Left">Left</option>
                             <option value="choose an option" SELECTED>ANSWER REQUIRED</option>
@@ -63,7 +63,7 @@
                         What is your age?
                     </div>
                     <div class="col-md-4">
-                        <select id="age" name="age">
+                        <select id="age" name="age" required>
                             <option value="66 and above">66 and above</option>
                             <option value="56-65">56-65</option>
                             <option value="46-55">46-55</option>
@@ -96,7 +96,7 @@
                         On a scale of 1-10 (where 10 is the most engaged), please rate how <b>ENGAGING</b> you found the learning task:
                     </div>
                     <div class="col-md-4">
-                        <select id="engagement" name="engagement">
+                        <select id="engagement" name="engagement" required>
                             <option value="10">10 - Very engaging</option>
                             <option value="9">9</option>
                             <option value="8">8</option>
@@ -120,7 +120,7 @@
                         On a scale of 1-10 (where 10 is the most difficult), please rate how <b>DIFFICULT</b> you found the learning task:
                     </div>
                     <div class="col-md-4">
-                        <select id="difficulty" name="difficulty">
+                        <select id="difficulty" name="difficulty" required>
                             <option value="10">10 - Very difficult</option>
                             <option value="9">9</option>
                             <option value="8">8</option>
@@ -144,7 +144,7 @@
                         On a scale of 1-10 (where 10 is the most fun), please rate how <b>FUN</b> you found the learning task:
                     </div>
                     <div class="col-md-4">
-                        <select id="fun" name="fun">
+                        <select id="fun" name="fun" required>
                             <option value="10">10 - Very fun</option>
                             <option value="9">9</option>
                             <option value="8">8</option>
@@ -166,7 +166,7 @@
                         Did you encounter any technical difficulties?:
                     </div>
                     <div class="col-md-4">
-                        <select id="technical" name="technical">
+                        <select id="technical" name="technical" required>
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                             <option value="choose an option" SELECTED>ANSWER REQUIRED</option>
@@ -220,7 +220,7 @@
         <div class="instructionsnav">
             <div class="row">
                 <div class="col">
-                   <button type="button" id="next" value="next" class="btn btn-primary btn-lg continue">
+                   <button type="submit" id="next" value="Submit" class="btn btn-primary btn-lg continue">
                         Submit <span class="glyphicon glyphicon-arrow-right"></span>
                     </button>
                 </div>
@@ -229,10 +229,5 @@
 
     </div>
 
-    <script type="text/javascript">
-        $("#next").on("click", function() {
-
-        })
-    </script>
 </body>
 </html>
