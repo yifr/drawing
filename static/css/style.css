@@ -1,6 +1,6 @@
 #editor {
-	width: 505;
-	height: 505px;
+	min-width: 505;
+	min-height: 505px;
 	border: 1px solid gray;
 }
 
@@ -36,7 +36,7 @@ strong {
 }
 
 #stim {
-    width: 60%;
+    min-width: 60%;
     border: solid 5px blue;
 }
 
@@ -45,6 +45,10 @@ strong {
     font-size: 20px;
     border: solid 1px gray !important;
     margin: 10px;
+}
+
+#next-image {
+  min-width: 10%
 }
 
 .warm {

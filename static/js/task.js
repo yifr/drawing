@@ -1,5 +1,6 @@
-var DEBUG = true;
+var DEBUG = false;
 var sketchpad = null;
+var nextButtonTimer = false;
 
 function closeModal() {
 	$(".modal").modal("hide");
@@ -42,7 +43,7 @@ function RenderUI(phaseConfig) {
 			$("#describe-heading").text("Describe a new image like the ones you've seen")
 		} 
 	} 
-	
+
 	// turn on relevant components
 	for (i=0; i < UIComponents.length; i++) {
 		var component = UIComponents[i];
@@ -67,6 +68,9 @@ function RenderUI(phaseConfig) {
 		} else if (component === "images") {
 			$("#stim-container").show();
 			dataDisplay = "images";	// Update data display 
+			if (UIComponents.indexOf("draw") < 0 && UIComponents.indexOf("describe") < 0) {
+				nextButtonTimer = true;
+			}
 		} else if (component === "descriptions") {
 			$("#descriptions-container").show();
 			dataDisplay = "descriptions";	// Update data display
@@ -92,6 +96,13 @@ function displayStim(phaseConfig, stimIndex) {
 	// Update descriptions if they exist
 	if(phaseConfig['descriptions'] && phaseConfig['descriptions'].length > stimIndex) {
 		$("#descriptions").html('"' + phaseConfig['descriptions'][stimIndex] + '"');	
+	}
+
+	if (nextButtonTimer) {
+		$("#next-image").prop("disabled", true);
+		setTimeout(function(){
+			$("#next-image").prop("disabled", false);
+		}, 3000);
 	}
 }
 
@@ -167,8 +178,10 @@ $(document).ready(function() {
 			var currentPhase = phases[phaseIndex];
 			var phaseConfig = data[currentPhase];
 
-			// Toggle UI Components
+			// Toggle UI Components and explain phase
 			var dataDisplay = RenderUI(phaseConfig);
+			var message = getPhaseDescription(phaseConfig, phase);						
+			toggleModal(message);
 			
 			var stims = phaseConfig[dataDisplay];
 			if (DEBUG) {
