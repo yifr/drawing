@@ -1,4 +1,4 @@
-var DEBUG = false;
+var DEBUG = true;
 var sketchpad = null;
 
 function closeModal() {
@@ -111,7 +111,7 @@ function getPhaseDescription(phaseConfig, phaseIndex) {
 	
 		return message;
 	}
-
+	var UIComponents = phaseConfig['ui_components'];
 	for (i=0; i < UIComponents.length; i++) {
 		var component = UIComponents[i];
 		if (component === "draw") {

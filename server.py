@@ -77,7 +77,7 @@ def get_instruction_pages(config):
         instruction_pages.append('instructions/look-only.html')
 
     if 'draw' in elements:
-        tasks.append('Draw an image yourself')
+        tasks.append('Draw images')
         instruction_pages.append('instructions/drawing-1.html')
         instruction_pages.append('instructions/drawing-2.html')
         instruction_pages.append('instructions/drawing-3.html')
@@ -86,7 +86,7 @@ def get_instruction_pages(config):
         tasks.append('Interpret descriptions of images')
     
     if 'describe' in elements:
-        tasks.append('Describe an image yourself')
+        tasks.append('Describe images')
         instruction_pages.append('instructions/describing-1.html')
         instruction_pages.append('instructions/describing-2.html')
 
