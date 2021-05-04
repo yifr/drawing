@@ -214,6 +214,7 @@ def not_found(error):
 def feedback():
     if request.method == 'GET': 
         return render_template("questionnaire.html")
+    
     if request.method == 'POST':
         data = {}
         for k, v in request.form.items():
@@ -222,6 +223,7 @@ def feedback():
         user_id = session['user_id']
         experiment_id = session['experiment_id']
 
-        db_utils.update_record(user_id, experiment_id, data)
+        result = db_utils.update_record(user_id, experiment_id, {'feedback': data})
+        
+        return render_template("thank-you.html")
 
-        return redirect("thank-you.html")

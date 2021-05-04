@@ -1,6 +1,6 @@
 #editor {
-	min-width: 505;
-	min-height: 505px;
+	width: 505;
+	height: 505px;
 	border: 1px solid gray;
 }
 

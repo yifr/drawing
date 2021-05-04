@@ -107,7 +107,7 @@ function displayStim(phaseConfig, stimIndex) {
 }
 
 function getPhaseDescription(phaseConfig, phaseIndex) {
-	var message = "<h1>Moving onto Phase " + phaseIndex + ":</h1>";
+	var message = "<h1>Beginning Phase " + phaseIndex + ":</h1>";
 	message += "<p>In this phase, you will be:</p><ul>";
 
 	if (phaseConfig["sampling"]) {
@@ -180,7 +180,7 @@ $(document).ready(function() {
 
 			// Toggle UI Components and explain phase
 			var dataDisplay = RenderUI(phaseConfig);
-			var message = getPhaseDescription(phaseConfig, phase);						
+			var message = getPhaseDescription(phaseConfig, currentPhase.split('_')[1]);						
 			toggleModal(message);
 			
 			var stims = phaseConfig[dataDisplay];

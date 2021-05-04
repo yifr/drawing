@@ -179,7 +179,7 @@
                         If you encountered technical difficulties, can you please describe them?:
                     </div>
                     <div class="col-md-4">
-                        <textarea id="technical_comments" rows="4" cols="50"></textarea>
+                        <textarea id="technical_comments" name="technical_comments" form="postquiz" rows="4" cols="50"></textarea>
                     </div>
                 </div>
 
@@ -189,7 +189,7 @@
                         Did you use any strategies to complete this task?:
                     </div>
                     <div class="col-md-4">
-                        <textarea id="strategies" rows="4" cols="50"></textarea>
+                        <textarea id="strategies" name="strategies" form="postquiz" rows="4" cols="50"></textarea>
                     </div>
                 </div>
 
@@ -198,7 +198,7 @@
                         Any feedback for the experimenters?:
                     </div>
                     <div class="col-md-4">
-                        <textarea id="patterns" rows="4" cols="50"></textarea>
+                        <textarea id="patterns" name="patterns" form="postquiz" rows="4" cols="50"></textarea>
                     </div>
                 </div>
 
@@ -207,9 +207,19 @@
                         What do you think the experiment was testing?:
                     </div>
                     <div class="col-md-4">
-                        <textarea id="testing" rows="4" cols="50"></textarea>
+                        <textarea id="testing" name="testing" form="postquiz" rows="4" cols="50"></textarea>
                     </div>
                 </div>
+
+		<div class="instructionsnav">
+		    <div class="row">
+			<div class="col">
+			   <button type="submit" id="next" value="Submit" class="btn btn-primary btn-lg continue">
+				Submit <span class="glyphicon glyphicon-arrow-right"></span>
+			    </button>
+			</div>
+		    </div>
+		</div>
 
 
             </form>
@@ -217,15 +227,6 @@
 
         <hr />
 
-        <div class="instructionsnav">
-            <div class="row">
-                <div class="col">
-                   <button type="submit" id="next" value="Submit" class="btn btn-primary btn-lg continue">
-                        Submit <span class="glyphicon glyphicon-arrow-right"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
 
     </div>
 
