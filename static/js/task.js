@@ -32,19 +32,17 @@ function RenderUI(phaseConfig) {
 	var dataDisplay = null;
 	
 	if (phaseConfig['sampling']) {
-		$("#stim-col").hide();
 		if (UIComponents.indexOf("draw") > -1) {
-			$("#editor-heading").text("1. Draw a new image like the ones you've seen")
+			$("#editor-heading").text("Draw a new image like the ones you've seen")
 			if (UIComponents.indexOf("describe") > -1) {
-				$("#describe-heading").text("2. Describe your drawing");		
+				$("#describe-container").css("visibility", "visible");
+				$("#describe-heading").text("Describe your drawing");		
 			}
 		} else if (UIComponents.indexOf("describe") > -1) {
-			$("#describe-heading").text("1. Describe a new image like the ones you've seen")
+			$("#describe-heading").text("Describe a new image like the ones you've seen")
 		} 
-	} else {
-		$("#stim-col").show(); 
-	}
-
+	} 
+	
 	// turn on relevant components
 	for (i=0; i < UIComponents.length; i++) {
 		var component = UIComponents[i];
@@ -52,8 +50,8 @@ function RenderUI(phaseConfig) {
 			// Create sketchpad
 			if (sketchpad == null) { 
 				sketchpad = Raphael.sketchpad("editor", {
-					width: 600,
-					height: 600,
+					width: 500,
+					height: 500,
 					border: "solid",
 					editing: true
 				});
@@ -64,9 +62,6 @@ function RenderUI(phaseConfig) {
 			$("#editor-container").show();
 			$("#user-input-col").show()
 		} else if (component === "describe") {
-			if (UIComponents.indexOf("draw") < 0) {
-				$("describe-heading").text("1. Please describe the image in the blue box")
-			}
 			$("#describe-container").css("visibility", "visible");
 			$("#user-input-col").show()
 		} else if (component === "images") {

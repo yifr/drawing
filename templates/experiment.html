@@ -26,29 +26,35 @@
 			<div class="row" id="stim-top">
 				<div class="col" id="stim-container" align="center" style="display: none;">
 					<h4>Original image:</h4>
-					<img id="stim" src="static/images/blank.png" alt="stim" style="width:600; height:600;" />
+					<img id="stim" src="static/images/blank.png" alt="stim" style="width:500; height:500;" />
 				</div>
 			</div>
 			<div class="row" id="stim-bottom">
 				<div class="col" id="descriptions-container" align="center" style="display: none;">			
 					<h1> This image is... </h1>
-					<h4 id="descriptions" style="width: 600px;"></h4>
+					<h4 id="descriptions" style="width: 500px;"></h4>
+				</div>
+			</div>
+			<div class="row" id="user-input-bottom" style="margin-top:10px;">
+				<div class="col" id="describe-container" align="center" style="visibility: hidden">
+					<h4 id="describe-heading"> In this image there is... </h4>
+					<textarea rows="3" cols="50" id="describe"></textarea>
 				</div>
 			</div>
 		</div>
 		<div class="col" id="user-input-col">
 			<div class="row" id="user-input-top">
 				<div class="col" id="editor-container" align="center" style="display: none;">
-					<h4 id="editor-heading"> Please draw the image in the blue box: </h4>
+					<h4 id="editor-heading"> Please draw the image: </h4>
 					<div id="editor"></div>
 				</div>
 			</div>
-			<div class="row" id="user-input-bottom" style="margin-top:10px;">
+			<!-- <div class="row" id="user-input-bottom" style="margin-top:10px;">
 				<div class="col" id="describe-container" align="center" style="visibility: hidden">
-					<h4 id="describe-heading"> Please describe the image in the blue box: </h4>
-					<textarea rows="3" cols="50" id="describe" placeholder=" In this image there is..."></textarea>
+					<h4 id="describe-heading"> In this image there is... </h4>
+					<textarea rows="3" cols="50" id="describe"></textarea>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 

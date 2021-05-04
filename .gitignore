@@ -1,3 +1,4 @@
 static/images/*
 certs.py
 *.pyc
+.DS_Store

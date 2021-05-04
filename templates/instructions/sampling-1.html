@@ -22,16 +22,19 @@
 			<div class="row">
 				<h2>Instructions for creating new images and descriptions</h2>
 				<br>
-				<h3> In some phases, you will need to create new images and descriptions.</h3>
-				<p>You have already seen images from the experiment. You will see a <i>blank sketchpad</i> and <i>blank textbox</i> like below.
-				Your task is to draw a new image like the kinds of images you have seen, and a short and clear description for your image.</p>
+				<p> <strong>In some phases, you will need to create new images and descriptions.</strong></p>
+				<p>You will have already seen images from the experiment. For these tasks, you will see a <i>blank sketchpad</i> and <i>blank textbox</i> like below.
+				Your task is to draw <i>a new image like the kinds of images you have seen</i>, and <i>write a short and clear description for your image.</i>
+				For example, you may draw a new image and a new description like:
+			</p>
 				
 			<div class="row" style="margin-top: 20px; margin-bottom: 20px;">
 				<div class="col" align="center">
 					<h3>Your new image here:</h3>
-					<div id="editor"></div>
+					<img src="static/images/fat_triangle.png", style="width: 500; height: 500; border: 1px solid black" /> 
 					<h3>Please write a description for the image.</h3>
-					<textarea rows=4 cols=50 id="describe" placeholder="This image is..."></textarea>
+					<p>In this image there is...</p>
+					<textarea rows=4 cols=40 id="describe"> A wide triangle</textarea>
 				</div>
 			</div>
 			<br><br>
@@ -56,13 +59,13 @@
 	</body>
 	<script type="text/javascript">
 
-		var sketchpad = Raphael.sketchpad("editor", { 
-			width: 600,
-			height: 600,
-			editing: true,
-		});
+		// var sketchpad = Raphael.sketchpad("editor", { 
+		// 	width: 500,
+		// 	height: 500,
+		// 	editing: true,
+		// });
 
-		var pen = sketchpad.pen();
-		pen.width(2);
+		// var pen = sketchpad.pen();
+		// pen.width(2);
 	</script>
 </html>
