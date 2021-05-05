@@ -59,6 +59,24 @@ IMAGES = "images"
 
 SAMPLING_DEFAULT_BATCH_SIZE = 10
 
+## Abbreviations for the configs
+TRAIN_ABBREVIATIONS = {
+    DRAW : "dr",
+    DESCRIBE : "de",
+    DESCRIPTIONS : "re",
+    IMAGES : "im"
+}
+TEST_ABBREVIATIONS = {
+    "test-images-draw-describe-sample" : "test-default", 
+    DRAW : "dr",
+    DESCRIBE : "de",
+    DESCRIPTIONS : "re",
+    IMAGES : "im"
+}
+STIMULI_SET_ABBREVIATIONS = {
+    "train_images_test_common_s12_s13_neurips_2020" : "neurips_2020"
+}
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--experiments",
                     nargs="*",
@@ -67,6 +85,9 @@ parser.add_argument("--experiments",
 parser.add_argument('--output_dir', 
                     default=DEFAULT_OUTPUT_DIR,
                     help="Top level directory under which we will write out the experiment configs.")
+parser.add_argument('--use_output_config_abbreviations', 
+                    default=True,
+                    help="Whether to abbreviate the output config names.")
 parser.add_argument("--input_stimuli_set_dir",
                     default=INPUT_STIMULI_SET_DIR,
                     help="Top-level directory where the stimuli sets are stored.")
@@ -204,11 +225,11 @@ def generate_2_provided_language(args, experiment_id, stimuli_set):
     description = "Provided language during training. Conditions on different language stimuli during training; images are the same. Uses the draw, describe, and free-generation testing behaviors."
     return generate_batched_train_test_configs(args, description, experiment_id, stimuli_set)
 
-@register("3_producing_language__train-images-describe__test-draw-describe-sample")
+@register("3_producing_language__train-images-describe__test-images-draw-describe-sample")
 def generate_3_producing_language_a_train_images_describe__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_3_producing_language(args, experiment_id, stimuli_set)
 
-@register("3_producing_language__train-images-draw-describe__test-draw-describe-sample")
+@register("3_producing_language__train-images-draw-describe__test-images-draw-describe-sample")
 def generate_3_producing_language_a_train_images_draw_describe__draw_describe_sample_interleave(args, experiment_id, stimuli_set):
     return generate_3_producing_language(args, experiment_id, stimuli_set)
     
@@ -341,6 +362,29 @@ def load_stimuli_set(args):
     with open(stimuli_path, 'r') as f:
         return json.load(f)
 
+def maybe_abbreviate_config_path(args, config_path):
+    if args.use_output_config_abbreviations:
+        abbreviated_config_parts = []
+        config_delimiter = "__"
+        for config_part in config_path.split(config_delimiter):
+            # Abbreviate the training section
+            if "train-" in config_part:
+                abbreviations = TRAIN_ABBREVIATIONS
+            elif "test-" in config_part:
+                abbreviations = TEST_ABBREVIATIONS
+            elif ".json" in config_part:
+                abbreviations = STIMULI_SET_ABBREVIATIONS
+            else:
+                abbreviations = {}
+            sorted_abbreviations = sorted(abbreviations.items(), key=lambda kv : -len(kv[0]))
+            for (original, abbreviation) in sorted_abbreviations:
+                config_part = config_part.replace(original, abbreviation)
+            abbreviated_config_parts += [config_part]
+        return config_delimiter.join(abbreviated_config_parts)    
+    else:
+        return config_path
+        
+    
 def iteratively_generate_experiment_configs(args, stimuli_set):
     for experiment in args.experiments:
         if experiment not in EXPERIMENT_CONFIG_GENERATOR_REGISTRY:
@@ -350,6 +394,7 @@ def iteratively_generate_experiment_configs(args, stimuli_set):
         config_data = experiment_config_generator_fn(args, experiment, stimuli_set)
         
         for config_path, config in config_data:
+            config_path = maybe_abbreviate_config_path(args, config_path)
             output_dir = os.path.join(args.output_dir, os.path.dirname(config_path))
             pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
             full_config_path = os.path.join(args.output_dir, config_path)
