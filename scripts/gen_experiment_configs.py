@@ -362,7 +362,7 @@ def load_stimuli_set(args):
     with open(stimuli_path, 'r') as f:
         return json.load(f)
 
-def maybe_abbreviate_config_path(args, config_path):
+def maybe_abbreviate_config(args, config_path, config):
     if args.use_output_config_abbreviations:
         abbreviated_config_parts = []
         config_delimiter = "__"
@@ -380,9 +380,12 @@ def maybe_abbreviate_config_path(args, config_path):
             for (original, abbreviation) in sorted_abbreviations:
                 config_part = config_part.replace(original, abbreviation)
             abbreviated_config_parts += [config_part]
-        return config_delimiter.join(abbreviated_config_parts)    
-    else:
-        return config_path
+        config_path =  config_delimiter.join(abbreviated_config_parts)    
+    
+    experiment_id = config_path.split("/")[0]
+    config[METADATA][EXPERIMENT_ID] = experiment_id
+    config[METADATA][FULL_CONFIG_PATH] = config_path
+    return config_path, config
         
     
 def iteratively_generate_experiment_configs(args, stimuli_set):
@@ -394,7 +397,7 @@ def iteratively_generate_experiment_configs(args, stimuli_set):
         config_data = experiment_config_generator_fn(args, experiment, stimuli_set)
         
         for config_path, config in config_data:
-            config_path = maybe_abbreviate_config_path(args, config_path)
+            config_path, config = maybe_abbreviate_config(args, config_path, config)
             output_dir = os.path.join(args.output_dir, os.path.dirname(config_path))
             pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
             full_config_path = os.path.join(args.output_dir, config_path)
