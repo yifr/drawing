@@ -5,6 +5,7 @@ Original source: drawgood/experiments/utils.py
 """
 # ==== plot all stimuli for a given subject
 import json
+import imageio
 import matplotlib.pyplot as plt
 import numpy as np
 import math
@@ -44,7 +45,7 @@ def process_stroke_data(raw_stroke_string):
         "trialcircleparams": trial_circle_params,
     }
 
-def plotDrawing(datflat_single, ax=[], addstrokelines=False):
+def plotDrawing(datflat_single, ax=[], addstrokelines=False, xlim=None, ylim=None):
     D = datflat_single
     if not ax:
         plt.figure()
@@ -53,8 +54,41 @@ def plotDrawing(datflat_single, ax=[], addstrokelines=False):
     ax.axes.xaxis.set_visible(False)
     ax.axes.yaxis.set_visible(False)
     ax.set_aspect("equal", "box")
+    if xlim is not None:
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
     plotstimwrapper(ax, D["trialstrokes"], D["trialprimitives"], D["trialcircleparams"], 
                         [], False, False, False, addstrokelines=addstrokelines)
+    return ax
+
+def save_stroke_gif(stroke_data, full_stroke_gif_path):
+    original_strokes = stroke_data["trialstrokes"]
+    ims = []
+    
+    for partial_idx in range(1, len(original_strokes)):
+        partial_strokes = original_strokes[:partial_idx]
+        partial_stroke_data = {
+            "trialstrokes" : partial_strokes,
+            "trialprimitives" : [],
+            "trialcircleparams" : []
+        }
+        ax = plotDrawing(partial_stroke_data)
+        xlim, ylim = ax.get_xlim(), ax.get_ylim()
+    
+    # Do it all again with the final limits
+    for partial_idx in range(1, len(original_strokes)):
+        partial_strokes = original_strokes[:partial_idx]
+        partial_stroke_data = {
+            "trialstrokes" : partial_strokes,
+            "trialprimitives" : [],
+            "trialcircleparams" : []
+        }
+        ax = plotDrawing(partial_stroke_data,xlim=xlim, ylim=ylim)    
+        ax.figure.canvas.draw()       # draw the canvas, cache the renderer
+        image = np.frombuffer(ax.figure.canvas .tostring_rgb(), dtype='uint8')
+        image  = image.reshape(ax.figure.canvas.get_width_height()[::-1] + (3,))
+        ims.append(image)
+    imageio.mimsave(full_stroke_gif_path, ims, fps=5)
 
 def saveDrawing(datflat_single, output_path, ax=[], addstrokelines=False):
     D = datflat_single
@@ -68,6 +102,7 @@ def saveDrawing(datflat_single, output_path, ax=[], addstrokelines=False):
     plotstimwrapper(ax, D["trialstrokes"], D["trialprimitives"], D["trialcircleparams"], 
                         [], False, False, False, addstrokelines=addstrokelines)
     plt.savefig(output_path)
+    
 
 def plotstimwrapper(ax, strokes, primitives=[], circle_params=[], times=[], 
     singleStrokes=False, use_snapped_lines=False, use_actual_time=False, 
