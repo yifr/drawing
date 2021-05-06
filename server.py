@@ -9,6 +9,7 @@ from flask import session
 from flask import Response
 from flask import jsonify
 from flask import render_template, redirect, url_for
+from bson import json_util
 
 import logging
 logging.basicConfig(filename='info.log', level=logging.DEBUG)
@@ -221,6 +222,9 @@ def feedback():
 def view_data():
     user_id = request.args.get('user_id', '', type=str) 
     experiment_id = request.args.get('experiment_id', '', type=str)
+    app.logger.info('Viewing data for: ')
+    app.logger.info('user_id: ' + str(user_id)) 
+    app.logger.info('experiment_id: ' + str(experiment_id)) 
     session['user_id'] = user_id
     session['experiment_id'] = experiment_id
 
@@ -229,4 +233,4 @@ def view_data():
 @app.route('/user_results', methods=['GET'])
 def get_results():
     res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
-    return json.dumps(res), 200, {'ContentType':'application/json'}
+    return jsonify(json.loads(json_util.dumps(res)))

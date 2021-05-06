@@ -95,7 +95,7 @@ function displayStim(phaseConfig, stimIndex) {
 	}
 
 	if (phaseConfig['user_descriptions']) {
-		$("#describe").value = phaseConfig['user_descriptions'][stimIndex];
+		$("#describe").val(phaseConfig['user_descriptions'][stimIndex]);
 	}
 
 	// Update descriptions if they exist
@@ -195,8 +195,6 @@ $(document).ready(function() {
 					}
 				}
 				
-				// Log data
-				data = recordTrial(data, currentPhase);
 
 				// Get next image
 				stimIndex += 1;
@@ -209,7 +207,6 @@ $(document).ready(function() {
 					phaseIndex += 1;
 					if (phaseIndex >= phases.length) {
 						data["metadata"]["completed"] = true
-						logData(data); 	// log that the user completed this experiment
 						toggleModal("Experiment completed!");
 						window.location.href = "feedback";	// Redirect to feedback form?
 
