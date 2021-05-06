@@ -112,10 +112,10 @@ def instructions():
     tasks, instruction_pages = get_instruction_pages(session['config'])
     n_phases = len(session['config']['phases'])
 
-    if int(index) >= len(instruction_pages):
+    if index >= len(instruction_pages):
         return render_template("experiment.html")
     else:
-        return render_template(instruction_pages[int(index)], index=int(index), tasks=tasks, n_phases=n_phases)
+        return render_template(instruction_pages[index], index=index, tasks=tasks, n_phases=n_phases)
 
 @app.route('/experiment_config', methods=['GET'])
 def get_config():
@@ -216,3 +216,17 @@ def feedback():
         
         return render_template("thank-you.html")
 
+
+@app.route('/viewing', methods=['GET'])
+def view_data():
+    user_id = request.args.get('user_id', '', type=str) 
+    experiment_id = request.args.get('experiment_id', '', type=str)
+    session['user_id'] = user_id
+    session['experiment_id'] = experiment_id
+
+    return render_template('viewing.html')
+
+@app.route('/user_results', methods=['GET'])
+def get_results():
+    res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
+    return json.dumps(res), 200, {'ContentType':'application/json'}
