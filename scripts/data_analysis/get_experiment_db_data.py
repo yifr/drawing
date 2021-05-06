@@ -124,7 +124,7 @@ def get_all_experiment_data(experiment_id, filters):
                 all_user_strokes += record[phase][STROKES]
             if USER_DESCRIPTIONS in record[phase]:
                 all_user_descriptions += record[phase][USER_DESCRIPTIONS]
-        experiment_dict[IMAGES], experiment_dict[STROKES], experiment_dict[DESCRIPTIONS] = all_user_images, all_user_strokes, all_user_descriptions
+        experiment_dict[IMAGES][user_id], experiment_dict[STROKES][user_id], experiment_dict[DESCRIPTIONS][user_id] = all_user_images, all_user_strokes, all_user_descriptions
     experiment_dict[SUMMARY] = {
         TOTAL_USERS : sum(len(users) for users in experiment_dict[CONDITIONS].values())
     }
