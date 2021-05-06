@@ -58,7 +58,7 @@ function RenderUI(phaseConfig) {
 					width: 500,
 					height: 500,
 					border: "solid",
-					editing: true
+					editing: false
 				});
 			} 
 			var pen = sketchpad.pen();
