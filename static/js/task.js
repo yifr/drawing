@@ -64,7 +64,6 @@ function RenderUI(phaseConfig) {
 			$("#user-input-col").show()
 		} else if (component === "describe") {
 			$("#describe-container").css("visibility", "visible");
-			$("#user-input-col").show()
 		} else if (component === "images") {
 			$("#stim-container").show();
 			dataDisplay = "images";	// Update data display 

@@ -9,23 +9,9 @@ from flask import session
 from flask import Response
 from flask import jsonify
 from flask import render_template, redirect, url_for
-from logging.config import dictConfig
 
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'INFO',
-        'handlers': ['wsgi']
-    }
-})
+import logging
+logging.basicConfig(filename='info.log', level=logging.DEBUG)
 
 app = Flask(__name__)
 app.secret_key = certs.secret_app_key
@@ -100,7 +86,8 @@ def get_instruction_pages(config):
 
 @app.route('/instructions', methods=['GET'])
 def instructions():
-    if request.args.get('experiment_id') or request.args.get('condition') or not session['config']:
+    """
+    if request.args.get('experiment_id') or request.args.get('condition') or request.args.get('PROLIFIC_PID'):
         user_id = request.args.get('PROLIFIC_PID')
         study_id = request.args.get('STUDY_ID')
         session_id = request.args.get('SESSION_ID')
@@ -116,7 +103,8 @@ def instructions():
         session['session_id'] = session_id
         session['experiment_id'] = experiment_id
         session['condition'] = condition
-
+    """ 
+    if not session.get('config'):
         get_config()
 
     print(session['config']['metadata']['experiment_id'])
@@ -158,9 +146,9 @@ def get_config():
         config_path = np.random.choice(experiment_configs)
         config = json.load(open(config_path, 'r'))
 
-    config['metadata']['user_id'] = session['user_id']
-    config['metadata']['study_id'] = session['study_id']
-    config['metadata']['session_id'] = session['session_id']
+    config['metadata']['user_id'] = session.get('user_id')
+    config['metadata']['study_id'] = session.get('study_id')
+    config['metadata']['session_id'] = session.get('session_id')
 
     session['config'] = config
     return jsonify(config)
@@ -168,6 +156,7 @@ def get_config():
 @app.route('/experiment', methods=['GET'])
 def experiment():
     if request.method == 'GET':
+        """
         if request.args:
             user_id = request.args.get('PROLIFIC_PID')
             study_id = request.args.get('STUDY_ID')
@@ -183,17 +172,17 @@ def experiment():
             session['session_id'] = session_id
             session['experiment_id'] = experiment_id
             session['condition'] = condition
-
+        """
         return render_template("experiment.html")
 
 @app.route('/consent', methods=['GET'])
 def consent():
     if request.args:
-            user_id = request.args.get('PROLIFIC_PID')
-            study_id = request.args.get('STUDY_ID')
-            session_id = request.args.get('SESSION_ID')
-            experiment_id = request.args.get('experiment_id')
-            condition = request.args.get('condition')
+            user_id = request.args.get('PROLIFIC_PID','',  type=str)
+            study_id = request.args.get('STUDY_ID', '', type=str)
+            session_id = request.args.get('SESSION_ID', '',  type=str)
+            experiment_id = request.args.get('experiment_id', '', type=str)
+            condition = request.args.get('condition', '', type=str)
 
             app.logger.info("experiment id " + str(experiment_id))
             app.logger.info("condition: " + str(condition))
@@ -203,7 +192,7 @@ def consent():
             session['session_id'] = session_id
             session['experiment_id'] = experiment_id
             session['condition'] = condition
-
+            
     return render_template("consent.html")
 
 @app.errorhandler(404)
