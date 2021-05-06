@@ -10,6 +10,9 @@ EXPERIMENT_ID = "experiment_id"
 EXPERIMENT_IDS = "experiment_ids"
 EXPERIMENT_GROUP = "experiment_group"
 
+USER_ID = "user_id"
+
+USER_DESCRIPTIONS = "user_descriptions"
 DESCRIPTION = "description"
 DESCRIPTIONS = "descriptions"
 LANGUAGE = "language"
@@ -30,3 +33,9 @@ EXPERIMENT_PHASES = "phases"
 EXPERIMENT_PHASE = "phase"
 UI_COMPONENTS = "ui_components"
 IMAGES = "images"
+STROKES = "strokes"
+
+SUMMARY = "summary"
+TOTAL_USERS = "total_users"
+
+EXCLUSION_USERS = "exclusion_users"

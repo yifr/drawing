@@ -6,11 +6,13 @@ This file is oriented towards experiment replication: it contains fine-grained r
 This writes out data to:
     data_experiment/drawlang_X.X/raw/raw_experiment_data.json
 We currently group all of the experiments (and their conditions) into one file.
-        metadata: metadata about the experiment group, including summary statistics on the experiment.
+        metadata: metadata about the experiment group
         experiment_ids: dict from experiment_id to data for that experiment.
             <experiment_id> : 
+                summary: summary statistics on the experiment
                 conditions : {condition : [list of users in that condition]}
                 images: {user : [ordered list of image paths seen by a user, or SAMPLE_X for samples]}
+                metadata : {user: experiment metadata}
                 strokes: {user : [ordered list of [stroke arrays] corresponding to images]}
                 descriptions : {user : [ordered list of descriptions corresponding to images]}
 
@@ -47,17 +49,40 @@ def register_group(name):
     
 @register_group("0.0")
 def download_data_0_0(args, experiment_group):
-    description = "0.0 - internal pilot. Compares 0_baseline, 1_provided_language with drawing, 3_producing_language with/without drawing."
+    description = "0.0 - internal pilot. Compares 0_baseline, 1_provided_language with drawing, 3_producing_language with/without drawing. Only keeps admin user data."
     experiment_ids = [
         "0_baselines_priors__train-none__test-default__neurips_2020",
         "1_no_provided_language__train-im-dr__test-default__neurips_2020",
         "3_producing_language__train-im-de__test-default__neurips_2020",
         "3_producing_language__train-im-dr-de__test-default__neurips_2020"
     ]
-    return get_experiment_group_data(args, experiment_group, description, experiment_ids)
+    def exclusion_users(user_id):
+        for admin_id in ['hope', 'cathy', 'yoni', 'admin']:
+            if admin_id in user_id: return False
+        return True
+        
+    filters = {EXCLUSION_USERS : exclusion_users}
+    return get_experiment_group_data(args, experiment_group, description, experiment_ids, filters)
+
+@register_group("0.1")
+def download_data_0_0(args, experiment_group):
+    description = "0.0 - external pilot. Compares 0_baseline, 1_provided_language with drawing, 3_producing_language with/without drawing."
+    experiment_ids = [
+        "0_baselines_priors__train-none__test-default__neurips_2020",
+        "1_no_provided_language__train-im-dr__test-default__neurips_2020",
+        "3_producing_language__train-im-de__test-default__neurips_2020",
+        "3_producing_language__train-im-dr-de__test-default__neurips_2020"
+    ]
+    def exclusion_users(user_id):
+        for admin_id in ['hope', 'cathy', 'yoni', 'admin']:
+            if admin_id in user_id: return True
+        return False
+        
+    filters = {EXCLUSION_USERS : exclusion_users}
+    return get_experiment_group_data(args, experiment_group, description, experiment_ids, filters)
 
 ### Utility functions for getting data.``
-def get_experiment_group_data(args, experiment_group, description, experiment_ids):
+def get_experiment_group_data(args, experiment_group, description, experiment_ids, filters):
     experiment_data = {}
     # Generate base metadata.
     metadata = generate_base_metadata(args, experiment_group, description, experiment_ids)
@@ -65,13 +90,45 @@ def get_experiment_group_data(args, experiment_group, description, experiment_id
     
     # Download data for each experiment.
     experiment_data[EXPERIMENT_IDS] = {
-        experiment_id : get_all_experiment_data(experiment_id) for experiment_id in experiment_ids
+        experiment_id : get_all_experiment_data(experiment_id, filters) for experiment_id in experiment_ids 
     }
     return experiment_data
 
-def get_all_experiment_data(experiment_id):
+def get_all_experiment_data(experiment_id, filters):
+    # Update the experiment metadata
+    experiment_dict = {
+        SUMMARY : None,
+        METADATA : defaultdict(list),
+        CONDITIONS : defaultdict(list),
+        IMAGES : defaultdict(list),
+        STROKES : defaultdict(list),
+        DESCRIPTIONS : defaultdict(list)
+    }
     for record in db_utils.all_experiment_records(experiment_id):
-        import pdb; pdb.set_trace()
+        user_id = record[METADATA][USER_ID]
+        
+        if EXCLUSION_USERS in filters:
+            exclusion_user_fn = filters[EXCLUSION_USERS]
+            if exclusion_user_fn(user_id): continue
+        
+        experiment_dict[METADATA][user_id].append(record[METADATA])
+        
+        condition = record[METADATA][CONDITION]
+        experiment_dict[CONDITIONS][condition].append(user_id)
+        
+        all_user_images, all_user_strokes, all_user_descriptions = [], [], []
+        for phase in record[EXPERIMENT_PHASES]:
+            if IMAGES in record[phase]:
+                all_user_images += record[phase][IMAGES]
+            if STROKES in record[phase]:
+                all_user_strokes += record[phase][STROKES]
+            if USER_DESCRIPTIONS in record[phase]:
+                all_user_descriptions += record[phase][USER_DESCRIPTIONS]
+        experiment_dict[IMAGES], experiment_dict[STROKES], experiment_dict[DESCRIPTIONS] = all_user_images, all_user_strokes, all_user_descriptions
+    experiment_dict[SUMMARY] = {
+        TOTAL_USERS : sum(len(users) for users in experiment_dict[CONDITIONS].values())
+    }
+    return experiment_dict
 
 def generate_base_metadata(args, experiment_group, description, experiment_ids):
     timestamp = datetime.now().isoformat()
