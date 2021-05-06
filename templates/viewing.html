@@ -38,7 +38,7 @@
 			<div class="row" id="user-input-bottom" style="margin-top:10px;">
 				<div class="col" id="describe-container" align="center" style="visibility: hidden">
 					<h4 id="describe-heading"> In this image there is... </h4>
-					<textarea rows="3" cols="50" id="describe" placeholder="Enter text here..."></textarea>
+					<p id="describe" style="padding: 10px; border: solid 1px"></p>
 				</div>
 			</div>
 		</div>
@@ -47,6 +47,7 @@
 				<div class="col" id="editor-container" align="center" style="display: none;">
 					<h4 id="editor-heading"> Please draw the image: </h4>
 					<div id="viewer"></div>
+					<button class="btn btn-primary" onclick="replay()">Replay </button>
 				</div>
 			</div>
 			<!-- <div class="row" id="user-input-bottom" style="margin-top:10px;">
@@ -59,7 +60,10 @@
 	</div>
 
 	<div class="row" style="margin-top: 10px">
-		<div class="col" align="center">
+		<div class="col" align="left">
+			<button class="btn btn-primary btn-lg" id="previous-image">Back</button>
+		</div>
+		<div class="col" align="right">
 			<button class="btn btn-primary btn-lg" id="next-image">Next</button>
 		</div>
 	</div>

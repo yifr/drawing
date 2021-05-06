@@ -11,6 +11,10 @@ function toggleModal(text) {
 	$("#infoModal").modal("show");
 }
 
+function replay() {
+	sketchpad.animate();
+}
+
 function updateProgressBar(currentPhase, numPhases, stimIdx, stimsLength) {
 	var percentComplete = Math.round(stimIdx / stimsLength * 100);
 	$("#progress-bar").attr("aria-valuenow", percentComplete);
@@ -95,7 +99,7 @@ function displayStim(phaseConfig, stimIndex) {
 	}
 
 	if (phaseConfig['user_descriptions']) {
-		$("#describe").val(phaseConfig['user_descriptions'][stimIndex]);
+		$("#describe").text(phaseConfig['user_descriptions'][stimIndex]);
 	}
 
 	// Update descriptions if they exist
@@ -182,20 +186,6 @@ $(document).ready(function() {
 
 			$('#next-image').on('click', function nextDrawing() {
 
-				// Rough heuristic to make sure the user has submitted appropriate data
-				// Ideally the next button should be disabled until everything is filled correctly
-				if (!DEBUG) {
-					if (sketchpad && sketchpad.strokes().length < 2) {
-						toggleModal("Please make sure you have accurately placed all your strokes on the sketchpad.");
-						return;
-					}
-					if ($("#describe-container").css("visibility") === "visible" && !$("#describe").val()) {
-						toggleModal("Please make sure you have entered an accurate description before moving on.");
-						return;
-					}
-				}
-				
-
 				// Get next image
 				stimIndex += 1;
 				
@@ -208,7 +198,6 @@ $(document).ready(function() {
 					if (phaseIndex >= phases.length) {
 						data["metadata"]["completed"] = true
 						toggleModal("Experiment completed!");
-						window.location.href = "feedback";	// Redirect to feedback form?
 
 					} else {
 						currentPhase = phases[phaseIndex];
@@ -224,7 +213,7 @@ $(document).ready(function() {
 				}
 	
 				// Reset Sketchpad and description
-				$('#describe').val('');	
+				$('#describe').text('');	
 				if (sketchpad) {
 					sketchpad.clear()
 				}
@@ -232,6 +221,46 @@ $(document).ready(function() {
 				// Update stimulus
 				displayStim(phaseConfig, stimIndex);
 			});
+
+
+			$('#previous-image').on('click', function previousDrawing() {
+
+				// Get next image
+				stimIndex = Math.max(stimIndex - 1, 0);
+				
+				// Update progress bar
+				updateProgressBar(currentPhase, numPhases, stimIndex, stims.length);
+
+				// Check if we've hit the end of a phase
+				if (stimIndex < 0) {
+					phaseIndex = Math.max(phaseIndex - 1, 0);
+					if (phaseIndex >= phases.length) {
+						data["metadata"]["completed"] = true
+						toggleModal("Experiment completed!");
+						window.location.href = "feedback";	// Redirect to feedback form?
+					} else {
+						currentPhase = phases[phaseIndex];
+						phaseConfig = data[currentPhase];
+						var phase = currentPhase.split("_")[1];
+						var message = getPhaseDescription(phaseConfig, phase);						
+						toggleModal(message);
+						dataDisplay = RenderUI(phaseConfig);
+						stims = phaseConfig[dataDisplay];
+						stimIndex = 0;
+						updateProgressBar(currentPhase, numPhases, stimIndex, stims.length);
+					}
+				}
+	
+				// Reset Sketchpad and description
+				$('#describe').text('');	
+				if (sketchpad) {
+					sketchpad.clear()
+				}
+				
+				// Update stimulus
+				displayStim(phaseConfig, stimIndex);
+			});
+
 
 		})
 	.fail(function() {

@@ -3461,3 +3461,270 @@ DEBUG:pymongo.ocsp_support:Requesting OCSP data
 DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
 DEBUG:pymongo.ocsp_support:Using cached OCSP response.
 DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+ERROR:flask.app:Exception on /user_results [GET]
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/afs/athena.mit.edu/org/c/cocosci/web_scripts/scripts/drawing/server.py", line 235, in get_results
+    res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
+AttributeError: 'module' object has no attribute 'get_record'
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+ERROR:flask.app:Exception on /user_results [GET]
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/afs/athena.mit.edu/org/c/cocosci/web_scripts/scripts/drawing/server.py", line 235, in get_results
+    res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
+AttributeError: 'module' object has no attribute 'get_record'
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+ERROR:flask.app:Exception on /user_results [GET]
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/afs/athena.mit.edu/org/c/cocosci/web_scripts/scripts/drawing/server.py", line 235, in get_results
+    res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
+AttributeError: 'module' object has no attribute 'get_record'
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+ERROR:flask.app:Exception on /user_results [GET]
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/afs/athena.mit.edu/org/c/cocosci/web_scripts/scripts/drawing/server.py", line 235, in get_results
+    res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
+AttributeError: 'module' object has no attribute 'get_record'
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+ERROR:flask.app:Exception on /user_results [GET]
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/afs/athena.mit.edu/org/c/cocosci/web_scripts/scripts/drawing/server.py", line 235, in get_results
+    res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
+AttributeError: 'module' object has no attribute 'get_record'
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+ERROR:flask.app:Exception on /user_results [GET]
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python2.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/afs/athena.mit.edu/org/c/cocosci/web_scripts/scripts/drawing/server.py", line 235, in get_results
+    res = db_utils.get_record(user_id=session['user_id'], experiment_id=session['experiment_id'])
+AttributeError: 'module' object has no attribute 'get_record'
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+INFO:flask.app:Viewing data for: 
+INFO:flask.app:user_id: 602d84f17cdd707e9caed37a
+INFO:flask.app:experiment_id: 0_baselines_priors__train-none__test-default__neurips_2020
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
