@@ -92,7 +92,22 @@ def get_experiment_group_data(args, experiment_group, description, experiment_id
     experiment_data[EXPERIMENT_IDS] = {
         experiment_id : get_all_experiment_data(experiment_id, filters) for experiment_id in experiment_ids 
     }
+    # Exclude any participants who appear multiple times in the data
+    exclude_duplicated_users(experiment_data)
     return experiment_data
+
+def exclude_duplicated_users(experiment_data):
+    users_to_counts = defaultdict(int)
+    for experiment_id in experiment_data[EXPERIMENT_IDS]:
+        experiment = experiment_data[EXPERIMENT_IDS][experiment_id]
+        for condition in experiment[CONDITIONS]:
+            for user in experiment[CONDITIONS][condition]:
+                users_to_counts[user] += 1
+    duplicated_users = [u for u in users_to_counts if users_to_counts[u] > 1]
+    experiment_data[METADATA][EXCLUSION_USERS] = duplicated_users
+    
+            
+    
 
 def get_all_experiment_data(experiment_id, filters):
     # Update the experiment metadata
@@ -105,12 +120,12 @@ def get_all_experiment_data(experiment_id, filters):
         DESCRIPTIONS : defaultdict(list)
     }
     for record in db_utils.all_experiment_records(experiment_id):
+        
         user_id = record[METADATA][USER_ID]
         
         if EXCLUSION_USERS in filters:
             exclusion_user_fn = filters[EXCLUSION_USERS]
             if exclusion_user_fn(user_id): continue
-        
         experiment_dict[METADATA][user_id].append(record[METADATA])
         
         condition = record[METADATA][CONDITION]
@@ -126,7 +141,7 @@ def get_all_experiment_data(experiment_id, filters):
                 all_user_descriptions += record[phase][USER_DESCRIPTIONS]
         experiment_dict[IMAGES][user_id], experiment_dict[STROKES][user_id], experiment_dict[DESCRIPTIONS][user_id] = all_user_images, all_user_strokes, all_user_descriptions
     experiment_dict[SUMMARY] = {
-        TOTAL_USERS : sum(len(users) for users in experiment_dict[CONDITIONS].values())
+        TOTAL_USERS : sum([len(users) for users in experiment_dict[CONDITIONS].values()])
     }
     return experiment_dict
 
