@@ -133,7 +133,7 @@ function getPhaseDescription(phaseConfig, phaseIndex) {
 	return message;
 }
 
-function logData(data) {
+function logData(data, callback) {
 	$.ajax({
 		type: "POST",
 		url: "record_data", 
@@ -143,6 +143,9 @@ function logData(data) {
 	.done(function(response) {
 		message = response['message']
 		console.log(response);
+		if (callback) {
+			callback();
+		}
 	})
 }
 
@@ -220,9 +223,11 @@ $(document).ready(function() {
 					phaseIndex += 1;
 					if (phaseIndex >= phases.length) {
 						data["metadata"]["completed"] = true
-						logData(data); 	// log that the user completed this experiment
-						toggleModal("Experiment completed!");
-						window.location.href = "feedback";	// Redirect to feedback form?
+						var exp_completed = function() {
+							toggleModal("Experiment Completed!");
+							window.location.href = "feedback";
+						}
+						logData(data, exp_completed); 	// log that the user completed this experiment
 
 					} else {
 						currentPhase = phases[phaseIndex];

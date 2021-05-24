@@ -18,8 +18,18 @@ def all_experiment_records(experiment_id):
     for record in collection.find({}):
         yield record
 
-def record_exists(collection, data):
-    user_id = data['metadata']['user_id']
+def repeat_user(user_id):
+    db = open_connection()
+    collections = db.list_collection_names()
+    for table_name in collections:
+        collection = db[table_name]
+        # We don't care about completion - if the user id appears anywhere else it's a repeat
+        if collection.find_one({'metadata.user_id':  user_id}):
+            return True
+
+    return False
+
+def record_exists(collection, user_id):
     result = collection.find_one({'metadata.user_id': user_id})
     if not result:
         return False
@@ -30,14 +40,14 @@ def record_exists(collection, data):
 def record(data):
     experiment_id = data['metadata']['experiment_id']
     user_id = data['metadata']['user_id']
-    print(user_id)
+    
     if user_id == 'admin':
         experiment_id = 'test'
 
     db = open_connection()
     collection = db[experiment_id]
 
-    if record_exists(collection, data):
+    if record_exists(collection, user_id) and user_id != 'admin':
         return {'success': False, 'message': 'User already completed experiment'}
 
     result = collection.replace_one({'metadata.user_id': user_id}, data, upsert=True)

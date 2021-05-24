@@ -184,6 +184,9 @@ def consent():
             session_id = request.args.get('SESSION_ID', '',  type=str)
             experiment_id = request.args.get('experiment_id', '', type=str)
             condition = request.args.get('condition', '', type=str)
+            
+            if user_id and db_utils.repeat_user(user_id):
+                return render_template("duplicate.html")
 
             app.logger.info("experiment id " + str(experiment_id))
             app.logger.info("condition: " + str(condition))
